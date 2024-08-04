@@ -1,0 +1,38 @@
+[
+    {
+        "event_name": "Event A",
+        "event_date": "2024-01-15",
+        "prompt": "Create a peaceful landscape with mountains and a river",
+        "negative_prompt": "No people, no buildings"
+    },
+    {
+        "event_name": "Event B",
+        "event_date": "2024-02-20",
+        "prompt": "Design a futuristic cityscape at night",
+        "negative_prompt": "No old-fashioned buildings, no daytime"
+    },
+    {
+        "event_name": "Event C",
+        "event_date": "2024-03-25",
+        "prompt": "Illustrate a fantasy forest with magical creatures",
+        "negative_prompt": "No modern technology, no human characters"
+    },
+    {
+        "event_name": "Event D",
+        "event_date": "2024-04-10",
+        "prompt": "Sketch an underwater scene with diverse marine life",
+        "negative_prompt": "No land, no boats"
+    },
+    {
+        "event_name": "Event E",
+        "event_date": "2024-05-05",
+        "prompt": "Draw a vibrant carnival scene with performers",
+        "negative_prompt": "No animals, no dull colors"
+    },
+    {
+        "event_name": "Event F",
+        "event_date": "2024-06-15",
+        "prompt": "Paint a serene sunset over a beach",
+        "negative_prompt": "No people, no artificial objects"
+    }
+]
