@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useRoute } from '@react-navigation/native';
 import events from '../../assets/fake_data/events.json';
@@ -12,6 +12,11 @@ export default function CreateEvents() {
     return events.find(event => event.event_name === eventName) || events[0];
   }, [eventName]);
 
+  const [eventNameInput, setEventNameInput] = useState(eventDetails.event_name);
+  const [eventDate, setEventDate] = useState(eventDetails.event_date);
+  const [prompt, setPrompt] = useState(eventDetails.prompt);
+  const [negativePrompt, setNegativePrompt] = useState(eventDetails.negative_prompt);
+
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
@@ -19,10 +24,34 @@ export default function CreateEvents() {
         <Text style={styles.logo}>Custom Logo</Text>
         
         <View style={styles.eventDetails}>
-          <Text style={styles.detailText}>{eventDetails.event_name}</Text>
-          <Text style={styles.detailText}>{eventDetails.event_date}</Text>
-          <Text style={styles.detailText}>{eventDetails.prompt}</Text>
-          <Text style={styles.detailText}>{eventDetails.negative_prompt}</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Event Name"
+            placeholderTextColor="#999"
+            onChangeText={setEventNameInput}
+            value={eventNameInput}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Event Date"
+            placeholderTextColor="#999"
+            onChangeText={setEventDate}
+            value={eventDate}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Prompt"
+            placeholderTextColor="#999"
+            onChangeText={setPrompt}
+            value={prompt}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Negative Prompt"
+            placeholderTextColor="#999"
+            onChangeText={setNegativePrompt}
+            value={negativePrompt}
+          />
         </View>
 
         <View style={styles.buttonContainer}>
@@ -69,10 +98,13 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 20,
   },
-  detailText: {
+  input: {
     color: '#FFFFFF',
     fontSize: 16,
     marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#333',
+    paddingVertical: 5,
   },
   buttonContainer: {
     flexDirection: 'row',
