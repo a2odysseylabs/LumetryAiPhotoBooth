@@ -1,21 +1,72 @@
-import React, { useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useRoute } from '@react-navigation/native';
-import events from '../../assets/fake_data/events.json';
+import axios from 'axios';
 
 export default function CreateEvents() {
   const route = useRoute();
   const eventName = route.params?.eventName;
 
-  const eventDetails = useMemo(() => {
-    return events.find(event => event.event_name === eventName) || events[0];
+  const [eventDetails, setEventDetails] = useState(null);
+  const [eventNameInput, setEventNameInput] = useState('');
+  const [eventDate, setEventDate] = useState('');
+  const [prompt, setPrompt] = useState('');
+  const [negativePrompt, setNegativePrompt] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/events');
+        const events = response.data.data;
+        const event = events.find(event => event.event_name === eventName);
+
+        if (event) {
+          setEventDetails(event);
+          setEventNameInput(event.event_name);
+          setEventDate(event.event_date);
+          setPrompt(event.prompt);
+          setNegativePrompt(event.negative_prompt);
+        }
+      } catch (error) {
+        console.error('Error fetching events:', error);
+        Alert.alert('Error', 'Failed to fetch event details');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
   }, [eventName]);
 
-  const [eventNameInput, setEventNameInput] = useState(eventDetails.event_name);
-  const [eventDate, setEventDate] = useState(eventDetails.event_date);
-  const [prompt, setPrompt] = useState(eventDetails.prompt);
-  const [negativePrompt, setNegativePrompt] = useState(eventDetails.negative_prompt);
+  const handleSave = async () => {
+    try {
+      const response = await axios.post('http://localhost:5001/update-event', {
+        eventName: eventNameInput,
+        eventDate,
+        prompt,
+        negativePrompt
+      });
+
+      if (response.data.status === 'ok') {
+        Alert.alert('Success', 'Event updated successfully');
+      } else {
+        Alert.alert('Error', response.data.data);
+      }
+    } catch (error) {
+      console.error('Error updating event:', error);
+      Alert.alert('Error', 'Failed to update event');
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -30,6 +81,7 @@ export default function CreateEvents() {
             placeholderTextColor="#999"
             onChangeText={setEventNameInput}
             value={eventNameInput}
+            editable={false}
           />
           <TextInput
             style={styles.input}
@@ -58,7 +110,7 @@ export default function CreateEvents() {
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Cancel</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.button, styles.saveButton]}>
+          <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={handleSave}>
             <Text style={styles.buttonText}>Save</Text>
           </TouchableOpacity>
         </View>

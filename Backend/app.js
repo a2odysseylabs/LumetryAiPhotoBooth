@@ -21,7 +21,8 @@ mongoose
 require("./UserDetails");
 const User = mongoose.model("UserInfo");
 
-
+require("./EventDetails");
+const Event = mongoose.model("EventInfo");
 
 app.get("/", (req, res) => {
   res.send({ status: "Started" });
@@ -70,6 +71,61 @@ app.post("/login-user", async (req, res) => {
   }
 });
 
+app.post("/create-event", async (req, res) => {
+  const { eventName, eventDate, prompt, negativePrompt } = req.body;
+
+  const oldEvent = await Event.findOne({ event_name: eventName });
+
+  if (oldEvent) {
+    return res.send({ status: "error", data: "Event name must be unique" });
+  }
+
+  try {
+    const newEvent = await Event.create({
+      event_name: eventName,
+      event_date: eventDate,
+      prompt: prompt,
+      negative_prompt: negativePrompt,
+    });
+    res.send({ status: "ok", data: newEvent });
+  } catch (error) {
+    res.send({ status: "error", data: error });
+  }
+});
+
+app.get("/events", async (req, res) => {
+  try {
+    const events = await Event.find({});
+    res.send({ status: "ok", data: events });
+  } catch (error) {
+    res.send({ status: "error", data: error });
+  }
+});
+
+app.post("/update-event", async (req, res) => {
+  const { eventName, eventDate, prompt, negativePrompt } = req.body;
+
+  try {
+    const event = await Event.findOneAndUpdate(
+      { event_name: eventName },
+      {
+        event_name: eventName,
+        event_date: eventDate,
+        prompt: prompt,
+        negative_prompt: negativePrompt,
+      },
+      { new: true }
+    );
+
+    if (!event) {
+      return res.send({ status: "error", data: "Event not found" });
+    }
+
+    res.send({ status: "ok", data: "Event updated successfully" });
+  } catch (error) {
+    res.send({ status: "error", data: error });
+  }
+});
 
 
 app.listen(5001, () => {
