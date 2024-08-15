@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, Image, Modal, TextInput } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { useRoute } from '@react-navigation/native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 
 export default function CaptureImageScreen() {
@@ -14,8 +14,8 @@ export default function CaptureImageScreen() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
   const [secureUrl, setSecureUrl] = useState(null);
-  const route = useRoute();
-  const eventName = route.params?.eventName;
+  const router = useRouter();
+  const { eventName } = useLocalSearchParams();
 
   if (!permission) {
     return <View />;
@@ -102,6 +102,7 @@ const handleSubmit = async () => {
     
     if (response.data.status === 'ok') {
       Alert.alert('Success', 'Photo added to event gallery successfully.');
+      router.push({ pathname: '/event-details', params: { eventName: eventName } });
     } else {
       Alert.alert('Error', response.data.data);
     }

@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Pressable, ScrollView, TouchableOpacity, ActivityIndicator, TextInput, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import axios from 'axios';
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import Modal from 'react-native-modal';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function EventsDisplay() {
+  const router = useRouter();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -75,15 +76,19 @@ export default function EventsDisplay() {
   };
 
   const renderEventItem = (event) => (
-    <Link href={{
-      pathname: '/CreateEvents',
-      params: { eventName: event.event_name }
-    }} asChild key={event._id}>
-      <Pressable style={styles.eventItem}>
-        <Text style={styles.eventName}>{event.event_name}</Text>
-        <Text style={styles.eventDate}>{event.event_date}</Text>
-      </Pressable>
-    </Link>
+    <Pressable
+      style={styles.eventItem}
+      key={event._id}
+      onPress={() =>
+        router.push({
+          pathname: '/event-details',
+          params: { eventName: event.event_name },
+        })
+      }
+    >
+      <Text style={styles.eventName}>{event.event_name}</Text>
+      <Text style={styles.eventDate}>{event.event_date}</Text>
+    </Pressable>
   );
 
   const renderAddNewEvent = () => (

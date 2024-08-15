@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 
 export default function CreateEvents() {
-  const route = useRoute();
-  const navigation = useNavigation();
-  const eventName = route.params?.eventName;
+  const router = useRouter();
+  const { eventName } = useLocalSearchParams();
 
   const [eventDetails, setEventDetails] = useState(null);
   const [eventNameInput, setEventNameInput] = useState('');
@@ -68,7 +67,10 @@ export default function CreateEvents() {
 
       if (response.data.status === 'ok') {
         // Navigate to the new page to collect phone number and email
-        navigation.navigate('CaptureImageScreen', { eventName: eventNameInput });
+        router.push({
+          pathname: '/CaptureImageScreen',
+          params: { eventName: eventNameInput },
+        });        
       } else {
         Alert.alert('Error', response.data.data);
       }
@@ -76,6 +78,13 @@ export default function CreateEvents() {
       console.error('Error starting event:', error);
       Alert.alert('Error', 'Failed to start event');
     }
+  };
+
+  const handleViewGallery = () => {
+    router.push({
+      pathname: '/ViewGalleryScreen',
+      params: { eventName: eventNameInput },
+    });    
   };
 
   if (loading) {
@@ -137,7 +146,7 @@ export default function CreateEvents() {
             <Text style={styles.buttonText}>Start Event</Text>
           </TouchableOpacity>
   
-          <TouchableOpacity style={styles.fullWidthButton}>
+          <TouchableOpacity style={styles.fullWidthButton} onPress={handleViewGallery}>
             <Text style={styles.buttonText}>View Gallery</Text>
           </TouchableOpacity>
         </View>
@@ -203,4 +212,3 @@ export default function CreateEvents() {
       textAlign: 'center',
     },
   });
-  

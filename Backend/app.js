@@ -141,9 +141,6 @@ app.post("/start-event", async (req, res) => {
       event.event_gallery = [];
     }
 
-    // Optionally, you can push initial data to event_gallery here if needed
-    // event.event_gallery.push({ ... });
-
     await event.save();
     res.send({ status: "ok", data: "Event started and event_gallery initialized" });
   } catch (error) {
@@ -165,6 +162,7 @@ app.post("/add-photo", async (req, res) => {
       imageUrl: imageUrl,
       phoneNumber: phoneNumber || null,
       email: email || null,
+      sent: null,
       uploadedAt: new Date(),
     });
 
