@@ -127,6 +127,53 @@ app.post("/update-event", async (req, res) => {
   }
 });
 
+app.post("/start-event", async (req, res) => {
+  const { eventName } = req.body;
+
+  try {
+    const event = await Event.findOne({ event_name: eventName });
+    if (!event) {
+      return res.send({ status: "error", data: "Event not found" });
+    }
+
+    // If the event_gallery field doesn't exist, initialize it as an empty array
+    if (!event.event_gallery) {
+      event.event_gallery = [];
+    }
+
+    // Optionally, you can push initial data to event_gallery here if needed
+    // event.event_gallery.push({ ... });
+
+    await event.save();
+    res.send({ status: "ok", data: "Event started and event_gallery initialized" });
+  } catch (error) {
+    res.send({ status: "error", data: error });
+  }
+});
+
+app.post("/add-photo", async (req, res) => {
+  const { eventName, imageUrl, phoneNumber, email } = req.body;
+
+  try {
+    const event = await Event.findOne({ event_name: eventName });
+    if (!event) {
+      return res.send({ status: "error", data: "Event not found" });
+    }
+
+    // Push the new photo details into the event_gallery array
+    event.event_gallery.push({
+      imageUrl: imageUrl,
+      phoneNumber: phoneNumber || null,
+      email: email || null,
+      uploadedAt: new Date(),
+    });
+
+    await event.save();
+    res.send({ status: "ok", data: "Photo added to event gallery successfully" });
+  } catch (error) {
+    res.send({ status: "error", data: error });
+  }
+});
 
 app.listen(5001, () => {
     console.log("Node js server started.");

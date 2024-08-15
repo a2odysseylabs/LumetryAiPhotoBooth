@@ -5,7 +5,8 @@ const EventDetailsSchema = new mongoose.Schema(
     event_name: { type: String, unique: true },
     event_date: Date,
     prompt: String,
-    negative_prompt: String
+    negative_prompt: String,
+    event_gallery: { type: Array, default: [] },
   },
   {
     collection: "EventInfo",

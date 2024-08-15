@@ -12,6 +12,7 @@ export default function App() {
       <Stack.Navigator initialRouteName="LoginPage">
         <Stack.Screen name="LoginPage" component={LoginPage} options={{ headerShown: false }} />
         <Stack.Screen name="EventsDisplay" component={EventsDisplay} />
+        <Stack.Screen name="CaptureImageScreen" component={CaptureImageScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
