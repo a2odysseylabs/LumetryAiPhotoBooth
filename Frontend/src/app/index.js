@@ -9,16 +9,13 @@ function LoginPage() {
     const [password, setPassword] = useState('');
 
     const handleLogin = () => {
-        console.log('Login attempted with:', username, password);
         const userData = {
             username: username,
             password: password,
         };
         axios.post('http://localhost:5001/login-user', userData)
             .then(res => {
-                console.log(res.data);
                 if (res.data.status === 'ok') {
-                    console.log('Logged In Successfully');
                     router.push('/events'); // Navigate using the router from expo-router
                 }
             })

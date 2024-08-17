@@ -15,7 +15,7 @@ export default function CaptureImageScreen() {
   const [email, setEmail] = useState('');
   const [secureUrl, setSecureUrl] = useState(null);
   const router = useRouter();
-  const { eventName } = useLocalSearchParams();
+  const { eventID } = useLocalSearchParams();
 
   if (!permission) {
     return <View />;
@@ -90,7 +90,7 @@ const handleSubmit = async () => {
 
     // Prepare the data to be sent to the backend
     const photoData = {
-      eventName: eventName,
+      eventID: eventID,
       imageUrl: secureUrl,
       phoneNumber: phoneNumber || null,
       email: email || null,
@@ -102,7 +102,10 @@ const handleSubmit = async () => {
     
     if (response.data.status === 'ok') {
       Alert.alert('Success', 'Photo added to event gallery successfully.');
-      router.push({ pathname: '/event-details', params: { eventName: eventName } });
+      router.replace({
+        pathname: '/CaptureImageScreen',
+        params: { eventID: eventID },
+      });      
     } else {
       Alert.alert('Error', response.data.data);
     }

@@ -21,7 +21,6 @@ export default function EventsDisplay() {
     const fetchEvents = async () => {
       try {
         const response = await axios.get('http://localhost:5001/events');
-        console.log(response);
         setEvents(response.data.data);
       } catch (error) {
         console.error('Error fetching events:', error);
@@ -50,7 +49,7 @@ export default function EventsDisplay() {
     // Ensure the event name is unique
     const existingEvent = events.find(event => event.event_name === newEventName);
     if (existingEvent) {
-      Alert.alert('Error', 'Event name must be unique');
+      Alert.alert('Error', 'Event name already exists');
       return;
     }
 
@@ -61,6 +60,8 @@ export default function EventsDisplay() {
         prompt: newPrompt,
         negativePrompt: newNegativePrompt
       });
+
+      console.log(response);
 
       if (response.data.status === 'ok') {
         Alert.alert('Success', 'Event created successfully');
@@ -82,7 +83,7 @@ export default function EventsDisplay() {
       onPress={() =>
         router.push({
           pathname: '/event-details',
-          params: { eventName: event.event_name },
+          params: { eventID: event._id },
         })
       }
     >

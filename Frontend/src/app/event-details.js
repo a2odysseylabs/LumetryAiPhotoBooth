@@ -6,9 +6,9 @@ import axios from 'axios';
 
 export default function CreateEvents() {
   const router = useRouter();
-  const { eventName } = useLocalSearchParams();
+  const { eventID } = useLocalSearchParams();
 
-  const [eventDetails, setEventDetails] = useState(null);
+  const [eventid, seteventID] = useState(null);
   const [eventNameInput, setEventNameInput] = useState('');
   const [eventDate, setEventDate] = useState('');
   const [prompt, setPrompt] = useState('');
@@ -20,10 +20,10 @@ export default function CreateEvents() {
       try {
         const response = await axios.get('http://localhost:5001/events');
         const events = response.data.data;
-        const event = events.find(event => event.event_name === eventName);
+        const event = events.find(event => event._id === eventID);
 
         if (event) {
-          setEventDetails(event);
+          seteventID(event._id);
           setEventNameInput(event.event_name);
           setEventDate(event.event_date);
           setPrompt(event.prompt);
@@ -38,11 +38,12 @@ export default function CreateEvents() {
     };
 
     fetchEvents();
-  }, [eventName]);
+  }, [eventID]);
 
   const handleSave = async () => {
     try {
       const response = await axios.post('http://localhost:5001/update-event', {
+        eventID: eventid,
         eventName: eventNameInput,
         eventDate,
         prompt,
@@ -60,30 +61,17 @@ export default function CreateEvents() {
     }
   };
 
-  const handleStartEvent = async () => {
-    try {
-      const response = await axios.post('http://localhost:5001/start-event', { eventName: eventNameInput });
-      console.log(response);
-
-      if (response.data.status === 'ok') {
-        // Navigate to the new page to collect phone number and email
-        router.push({
-          pathname: '/CaptureImageScreen',
-          params: { eventName: eventNameInput },
-        });        
-      } else {
-        Alert.alert('Error', response.data.data);
-      }
-    } catch (error) {
-      console.error('Error starting event:', error);
-      Alert.alert('Error', 'Failed to start event');
-    }
-  };
+  const handleStartEvent = () => {
+    router.push({
+      pathname: '/CaptureImageScreen',
+      params: { eventID: eventid },
+    });
+  };  
 
   const handleViewGallery = () => {
     router.push({
       pathname: '/ViewGalleryScreen',
-      params: { eventName: eventNameInput },
+      params: { eventID: eventid },
     });    
   };
 
@@ -108,7 +96,7 @@ export default function CreateEvents() {
             placeholderTextColor="#999"
             onChangeText={setEventNameInput}
             value={eventNameInput}
-            editable={false}
+            // editable={false}
           />
           <TextInput
             style={styles.input}

@@ -4,7 +4,7 @@ import { useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 
 export default function ViewGalleryScreen() {
-  const { eventName } = useLocalSearchParams();
+  const { eventID } = useLocalSearchParams();
   const [eventGallery, setEventGallery] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -13,7 +13,7 @@ export default function ViewGalleryScreen() {
       try {
         const response = await axios.get('http://localhost:5001/events');
         const events = response.data.data;
-        const event = events.find(event => event.event_name === eventName);
+        const event = events.find(event => event._id === eventID);
 
         if (event && Array.isArray(event.event_gallery)) {
           setEventGallery(event.event_gallery);
@@ -29,7 +29,7 @@ export default function ViewGalleryScreen() {
     };
 
     fetchEventGallery();
-  }, [eventName]);
+  }, [eventID]);
 
   if (loading) {
     return (

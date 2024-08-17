@@ -71,6 +71,8 @@ app.post("/login-user", async (req, res) => {
   }
 });
 
+
+
 app.post("/create-event", async (req, res) => {
   const { eventName, eventDate, prompt, negativePrompt } = req.body;
 
@@ -93,6 +95,8 @@ app.post("/create-event", async (req, res) => {
   }
 });
 
+
+
 app.get("/events", async (req, res) => {
   try {
     const events = await Event.find({});
@@ -102,12 +106,14 @@ app.get("/events", async (req, res) => {
   }
 });
 
+
+
 app.post("/update-event", async (req, res) => {
-  const { eventName, eventDate, prompt, negativePrompt } = req.body;
+  const { eventID, eventName, eventDate, prompt, negativePrompt } = req.body;
 
   try {
     const event = await Event.findOneAndUpdate(
-      { event_name: eventName },
+      { _id: eventID },
       {
         event_name: eventName,
         event_date: eventDate,
@@ -127,32 +133,13 @@ app.post("/update-event", async (req, res) => {
   }
 });
 
-app.post("/start-event", async (req, res) => {
-  const { eventName } = req.body;
 
-  try {
-    const event = await Event.findOne({ event_name: eventName });
-    if (!event) {
-      return res.send({ status: "error", data: "Event not found" });
-    }
-
-    // If the event_gallery field doesn't exist, initialize it as an empty array
-    if (!event.event_gallery) {
-      event.event_gallery = [];
-    }
-
-    await event.save();
-    res.send({ status: "ok", data: "Event started and event_gallery initialized" });
-  } catch (error) {
-    res.send({ status: "error", data: error });
-  }
-});
 
 app.post("/add-photo", async (req, res) => {
-  const { eventName, imageUrl, phoneNumber, email } = req.body;
+  const { eventID, imageUrl, phoneNumber, email } = req.body;
 
   try {
-    const event = await Event.findOne({ event_name: eventName });
+    const event = await Event.findOne({ _id: eventID });
     if (!event) {
       return res.send({ status: "error", data: "Event not found" });
     }
