@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, Alert, Dimensions, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
+import GlobalStyles, { borderRadius, colors, fonts, spacing } from './globalStyles';
+import { useNavigation } from '@react-navigation/native';
 
 export default function ViewGalleryScreen() {
+  const navigation = useNavigation();
+
   const { eventID } = useLocalSearchParams();
   const [eventGallery, setEventGallery] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [dimensions, setDimensions] = useState(Dimensions.get('window'));
 
   useEffect(() => {
     const fetchEventGallery = async () => {
@@ -34,25 +39,33 @@ export default function ViewGalleryScreen() {
   if (loading) {
     return (
       <View style={styles.container}>
-        <Text style={styles.message}>Loading gallery...</Text>
+        <Text style={fonts.display}>Loading gallery...</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
+      <Text style={{...fonts.display, textAlign: 'center'}}>Gallery for {eventID}</Text>
+      <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent', textAlign: 'center', marginBottom: spacing.lg}} onPress={() => navigation.goBack()}>
+        <Text style={GlobalStyles.buttonText}>Go back</Text>
+      </TouchableOpacity>
       {eventGallery.length > 0 ? (
         <ScrollView contentContainerStyle={styles.scrollView}>
           {eventGallery.map((item, index) => (
             <Image 
               key={index}
               source={{ uri: item.imageUrl }}
-              style={styles.image}
+              style={{
+                width: dimensions.width / 5,
+                height: dimensions.width / 5,
+                borderRadius: borderRadius.md,
+              }}
             />
           ))}
         </ScrollView>
       ) : (
-        <Text style={styles.message}>There is nothing to display in the gallery.</Text>
+        <Text style={fonts.display}>There is nothing to display in the gallery.</Text>
       )}
     </View>
   );
@@ -61,22 +74,13 @@ export default function ViewGalleryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: colors.gray[300],
   },
   scrollView: {
-    alignItems: 'center',
-  },
-  image: {
-    width: 300,
-    height: 300,
-    marginBottom: 20,
-    borderRadius: 8,
-  },
-  message: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    gap: spacing.md,
+    flexWrap: 'wrap',
+    justifyContent: 'center',
   },
 });

@@ -1,21 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Pressable, ScrollView, TouchableOpacity, ActivityIndicator, TextInput, Alert } from 'react-native';
+import { StyleSheet, Text, View, Pressable, ScrollView, TouchableOpacity, ActivityIndicator, TextInput, Alert, Dimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
 import Modal from 'react-native-modal';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
+
+import GlobalStyles, { borderRadius, colors, fonts, spacing } from './globalStyles';
 
 export default function EventsDisplay() {
   const router = useRouter();
+  const navigation = useNavigation();
+
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setModalVisible] = useState(false);
   const [newEventName, setNewEventName] = useState('');
   const [newEventDate, setNewEventDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const [newPrompt, setNewPrompt] = useState('');
+  const [newPromptTitle, setNewPromptTitle] = useState(''); //todo: add to mongodb
   const [newNegativePrompt, setNewNegativePrompt] = useState('');
+  const [dimensions, setDimensions] = useState(Dimensions.get('window'));
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -37,12 +44,7 @@ export default function EventsDisplay() {
   };
 
   const handleDateChange = (event, selectedDate) => {
-    setShowDatePicker(false);
     setNewEventDate(selectedDate || newEventDate);
-  };
-
-  const showDatePickerModal = () => {
-    setShowDatePicker(true);
   };
 
   const handleSaveNewEvent = async () => {
@@ -57,6 +59,7 @@ export default function EventsDisplay() {
       const response = await axios.post('http://localhost:5001/create-event', {
         eventName: newEventName,
         eventDate: newEventDate.toISOString(),
+        promptTitle: newPromptTitle,
         prompt: newPrompt,
         negativePrompt: newNegativePrompt
       });
@@ -78,7 +81,7 @@ export default function EventsDisplay() {
 
   const renderEventItem = (event) => (
     <Pressable
-      style={styles.eventItem}
+      style={{ ...GlobalStyles.eventCard, flexBasis: dimensions.width > 600 ? '31.97%' : '100%' }}
       key={event._id}
       onPress={() =>
         router.push({
@@ -87,13 +90,41 @@ export default function EventsDisplay() {
         })
       }
     >
-      <Text style={styles.eventName}>{event.event_name}</Text>
-      <Text style={styles.eventDate}>{event.event_date}</Text>
+      <Text 
+        style={{ 
+          color: colors.text, 
+          fontSize: fonts.size_18, 
+          fontFamily: fonts.bold,
+      }}>
+        {event.event_name}
+      </Text>
+      <Text 
+        style={{ 
+          color: colors.lightGray,
+          marginBottom: spacing.md,
+      }}>
+        {event.event_date}
+      </Text>
+      <Text 
+        style={{ 
+          color: colors.text,
+          fontSize: fonts.size_14,
+      }}>
+        {event.promptTitle}
+        {/* Prompt title */}
+      </Text>
     </Pressable>
   );
 
   const renderAddNewEvent = () => (
-    <TouchableOpacity style={styles.addNewEvent} onPress={toggleModal}>
+    <TouchableOpacity 
+      style={{
+        ...styles.addNewEvent,
+        width: dimensions.width > 600 ? "30%" : "100%"
+      }} 
+      onPress={toggleModal}
+    >
+      <FontAwesome name="plus" size={48} color={colors.gray[100]} />
       <Text style={styles.addNewEventText}>Add New Event</Text>
     </TouchableOpacity>
   );
@@ -109,58 +140,99 @@ export default function EventsDisplay() {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.gridContainer}>
+
+      <Text style={fonts.display}>Lumetry AI Photo Booth</Text>
+      <Text style={fonts.display}>Select or create event</Text>
+
+      <View style={{ 
+        display: 'flex',
+        flexDirection: 'row',
+        gap: spacing.md,
+      }}>
+        <TextInput
+          style={{ ...GlobalStyles.textInput, width: 'initial', flexGrow: 1, marginBottom: 0 }}
+          placeholder="Search Events"
+          placeholderTextColor={colors.lightGray}
+          // onChangeText={todo: update search results}
+          // value={}
+        />
+        <TouchableOpacity 
+          style={{ ...GlobalStyles.button, width: 'fit-content', }}
+          onPress={toggleModal}
+        >
+          <Text style={GlobalStyles.buttonText}>Add Event</Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView contentContainerStyle={{}}>
+        <View style={{
+          flex: dimensions.width > 600 ? 3 : 1,
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: spacing.md,
+          marginTop: spacing.xl,
+        }}>
           {events.map(renderEventItem)}
           {renderAddNewEvent()}
         </View>
       </ScrollView>
 
+      {/* ADD EVENT MODAL */}
       <Modal isVisible={isModalVisible}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Add New Event</Text>
+        <View style={{backgroundColor: colors.gray[300], padding: spacing.lg, borderRadius: borderRadius.lg}}>
+          <Text style={fonts.display}>Add New Event</Text>
+
           <TextInput
-            style={styles.input}
+            style={GlobalStyles.textInput}
             placeholder="Event Name"
-            placeholderTextColor="#999"
+            placeholderTextColor={colors.lightGray}
             onChangeText={setNewEventName}
             value={newEventName}
           />
-          <TouchableOpacity onPress={showDatePickerModal}>
-            <Text style={styles.input}>
-              {newEventDate.toLocaleDateString()}
-            </Text>
-          </TouchableOpacity>
-          {showDatePicker && (
+
+          <View style={{...GlobalStyles.textInput, display: 'flex', alignItems: 'start', paddingLeft: 0}}>
             <DateTimePicker
               value={newEventDate}
               mode="date"
               display="default"
               onChange={handleDateChange}
+              themeVariant="dark"
             />
-          )}
+          </View>
+
           <TextInput
-            style={styles.input}
+            style={GlobalStyles.textInput}
+            placeholder="Prompt Title"
+            placeholderTextColor={colors.lightGray}
+            onChangeText={setNewPromptTitle}
+            value={newPromptTitle}
+          />
+          
+          <TextInput
+            style={GlobalStyles.textInput}
             placeholder="Prompt"
-            placeholderTextColor="#999"
+            placeholderTextColor={colors.lightGray}
             onChangeText={setNewPrompt}
             value={newPrompt}
           />
+
           <TextInput
-            style={styles.input}
+            style={GlobalStyles.textInput}
             placeholder="Negative Prompt"
-            placeholderTextColor="#999"
+            placeholderTextColor={colors.lightGray}
             onChangeText={setNewNegativePrompt}
             value={newNegativePrompt}
           />
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={toggleModal}>
-              <Text style={styles.buttonText}>Cancel</Text>
+
+          <View style={GlobalStyles.buttonContainer}>
+            <TouchableOpacity style={{...GlobalStyles.button, width: '48%', backgroundColor: 'transparent'}} onPress={toggleModal}>
+              <Text style={GlobalStyles.buttonText}>Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={handleSaveNewEvent}>
-              <Text style={styles.buttonText}>Save</Text>
+            <TouchableOpacity style={{...GlobalStyles.button, width: '48%'}} onPress={handleSaveNewEvent}>
+              <Text style={GlobalStyles.buttonText}>Save</Text>
             </TouchableOpacity>
           </View>
+
         </View>
       </Modal>
     </View>
@@ -170,94 +242,23 @@ export default function EventsDisplay() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: colors.gray[300],
     justifyContent: 'center', // Center the loader
     alignItems: 'center', // Center the loader
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    padding: 16,
-  },
-  gridContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  eventItem: {
-    width: '30%',
-    aspectRatio: 1,
-    backgroundColor: '#1E1E1E',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  eventName: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  eventDate: {
-    color: '#A0A0A0',
-    fontSize: 12,
-    textAlign: 'center',
+    padding: spacing.md,
   },
   addNewEvent: {
-    width: '30%',
-    aspectRatio: 1,
-    backgroundColor: '#2A2A2A',
-    borderRadius: 8,
-    justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#3A3A3A',
-    borderStyle: 'dashed',
+    backgroundColor: colors.gray[400],
+    borderRadius: borderRadius.lg,
+    borderColor: colors.gray[100],
+    justifyContent: 'center',
+    width: '30%',
   },
   addNewEventText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  modalContent: {
-    backgroundColor: '#121212',
-    padding: 20,
-    borderRadius: 10,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: 10,
-  },
-  input: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    marginBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#333',
-    paddingVertical: 5,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-  },
-  button: {
-    backgroundColor: '#1E1E1E',
-    borderRadius: 8,
-    padding: 15,
-    flex: 1,
-    marginHorizontal: 5,
-  },
-  saveButton: {
-    backgroundColor: '#8B0000', // Dark red color
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
+    color: colors.text,
+    fontSize: fonts.size_18,
+    fontFamily: fonts.bold,
     textAlign: 'center',
   },
 });
