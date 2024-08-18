@@ -99,12 +99,12 @@ const handleSubmit = async () => {
 
     // Send the photo data to the backend
     const response = await axios.post('http://localhost:5001/add-photo', photoData);
-    console.log(response);
+    // console.log(response);
     
     if (response.data.status === 'ok') {
       Alert.alert('Success', 'Photo added to event gallery successfully.');
       router.replace({
-        pathname: '/CaptureImageScreen',
+        pathname: '/SuccessScreen',
         params: { eventID: eventID },
       });      
     } else {
@@ -161,7 +161,8 @@ const handleSubmit = async () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
-            <Text style={fonts.display}>Enter Your Details</Text>
+          <Text style={fonts.display}>Share Your Photos</Text>
+          <Text style={styles.modalSubText}>How would you like to receive your photos?</Text>
             <TextInput
               style={GlobalStyles.textInput}
               placeholder="Phone Number"
@@ -170,6 +171,7 @@ const handleSubmit = async () => {
               value={phoneNumber}
               onChangeText={setPhoneNumber}
             />
+            <Text style={styles.modalSubText}>OR</Text>
             <TextInput
               style={GlobalStyles.textInput}
               placeholder="Email"
@@ -233,5 +235,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     alignItems: 'center',
+  },
+  modalSubText: {
+    color: '#AAA',
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: spacing.md,
   },
 });

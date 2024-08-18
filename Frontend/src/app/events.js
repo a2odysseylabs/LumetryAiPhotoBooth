@@ -20,8 +20,9 @@ export default function EventsDisplay() {
   const [newEventName, setNewEventName] = useState('');
   const [newEventDate, setNewEventDate] = useState(new Date());
   const [newPrompt, setNewPrompt] = useState('');
-  const [newPromptTitle, setNewPromptTitle] = useState(''); //todo: add to mongodb
+  const [newPromptTitle, setNewPromptTitle] = useState('');
   const [newNegativePrompt, setNewNegativePrompt] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
 
   useEffect(() => {
@@ -79,41 +80,64 @@ export default function EventsDisplay() {
     }
   };
 
-  const renderEventItem = (event) => (
-    <Pressable
-      style={{ ...GlobalStyles.eventCard, flexBasis: dimensions.width > 600 ? '31.97%' : '100%' }}
-      key={event._id}
-      onPress={() =>
-        router.push({
-          pathname: '/event-details',
-          params: { eventID: event._id },
-        })
-      }
-    >
-      <Text 
+  const renderEventItem = (event) => {
+    // Convert the event date from UTC to local time
+    const eventDate = new Date(event.event_date);
+    const localDateString = eventDate.toLocaleString(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZoneName: 'short',
+    });
+  
+    return (
+      <Pressable
         style={{ 
-          color: colors.text, 
-          fontSize: fonts.size_18, 
-          fontFamily: fonts.bold,
-      }}>
-        {event.event_name}
-      </Text>
-      <Text 
-        style={{ 
-          color: colors.lightGray,
-          marginBottom: spacing.md,
-      }}>
-        {event.event_date}
-      </Text>
-      <Text 
-        style={{ 
-          color: colors.text,
-          fontSize: fonts.size_14,
-      }}>
-        {event.promptTitle}
-        {/* Prompt title */}
-      </Text>
-    </Pressable>
+          ...GlobalStyles.eventCard, 
+          flexBasis: dimensions.width > 600 ? '31.97%' : '100%' 
+        }}
+        key={event._id}
+        onPress={() =>
+          router.push({
+            pathname: '/event-details',
+            params: { eventID: event._id },
+          })
+        }
+      >
+        <Text 
+          style={{ 
+            color: colors.text, 
+            fontSize: fonts.size_18, 
+            fontFamily: fonts.bold,
+          }}
+        >
+          {event.event_name}
+        </Text>
+        <Text 
+          style={{ 
+            color: colors.lightGray,
+            marginBottom: spacing.md,
+          }}
+        >
+          {localDateString}
+        </Text>
+        <Text 
+          style={{ 
+            color: colors.text,
+            fontSize: fonts.size_14,
+          }}
+        >
+          {event.promptTitle}
+          {/* Prompt title */}
+        </Text>
+      </Pressable>
+    );
+  };  
+
+  const filteredEvents = events.filter(event => 
+    event.event_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const renderAddNewEvent = () => (
@@ -153,8 +177,8 @@ export default function EventsDisplay() {
           style={{ ...GlobalStyles.textInput, width: 'initial', flexGrow: 1, marginBottom: 0 }}
           placeholder="Search Events"
           placeholderTextColor={colors.lightGray}
-          // onChangeText={todo: update search results}
-          // value={}
+          onChangeText={text => setSearchQuery(text)}
+          value={searchQuery}
         />
         <TouchableOpacity 
           style={{ ...GlobalStyles.button, width: 'fit-content', }}
@@ -172,7 +196,7 @@ export default function EventsDisplay() {
           gap: spacing.md,
           marginTop: spacing.xl,
         }}>
-          {events.map(renderEventItem)}
+          {filteredEvents.map(renderEventItem)}
           {renderAddNewEvent()}
         </View>
       </ScrollView>

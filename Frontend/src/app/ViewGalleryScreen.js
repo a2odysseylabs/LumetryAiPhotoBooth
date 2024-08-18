@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, Alert, Dimensions, TouchableOpacity } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import GlobalStyles, { borderRadius, colors, fonts, spacing } from './globalStyles';
-import { useNavigation } from '@react-navigation/native';
 
 export default function ViewGalleryScreen() {
-  const navigation = useNavigation();
-
-  const { eventID } = useLocalSearchParams();
+  const router = useRouter();
+  const { eventID, eventName } = useLocalSearchParams();
   const [eventGallery, setEventGallery] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
@@ -46,8 +44,10 @@ export default function ViewGalleryScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={{...fonts.display, textAlign: 'center'}}>Gallery for {eventID}</Text>
-      <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent', textAlign: 'center', marginBottom: spacing.lg}} onPress={() => navigation.goBack()}>
+      <Text style={{...fonts.display, textAlign: 'center'}}>Gallery for {eventName}</Text>
+      <TouchableOpacity 
+        style={{...GlobalStyles.button, backgroundColor: 'transparent', textAlign: 'center', marginBottom: spacing.lg}} 
+        onPress={() => router.back()} >
         <Text style={GlobalStyles.buttonText}>Go back</Text>
       </TouchableOpacity>
       {eventGallery.length > 0 ? (

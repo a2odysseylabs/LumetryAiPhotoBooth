@@ -83,7 +83,7 @@ export default function CreateEvents() {
   const handleViewGallery = () => {
     router.push({
       pathname: '/ViewGalleryScreen',
-      params: { eventID: eventid },
+      params: { eventID: eventid, eventName: eventNameInput },
     });    
   };
 
