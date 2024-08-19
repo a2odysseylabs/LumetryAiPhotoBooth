@@ -74,7 +74,7 @@ app.post("/login-user", async (req, res) => {
 
 
 app.post("/create-event", async (req, res) => {
-  const { eventName, eventDate, prompt, negativePrompt } = req.body;
+  const { eventName, eventDate, promptTitle, prompt, negativePrompt } = req.body;
 
   const oldEvent = await Event.findOne({ event_name: eventName });
 
@@ -86,6 +86,7 @@ app.post("/create-event", async (req, res) => {
     const newEvent = await Event.create({
       event_name: eventName,
       event_date: eventDate,
+      promptTitle: promptTitle,
       prompt: prompt,
       negative_prompt: negativePrompt,
     });
@@ -109,7 +110,7 @@ app.get("/events", async (req, res) => {
 
 
 app.post("/update-event", async (req, res) => {
-  const { eventID, eventName, eventDate, prompt, negativePrompt } = req.body;
+  const { eventID, eventName, eventDate, promptTitle, prompt, negativePrompt } = req.body;
 
   try {
     const event = await Event.findOneAndUpdate(
@@ -117,6 +118,7 @@ app.post("/update-event", async (req, res) => {
       {
         event_name: eventName,
         event_date: eventDate,
+        promptTitle: promptTitle,
         prompt: prompt,
         negative_prompt: negativePrompt,
       },

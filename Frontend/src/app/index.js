@@ -2,11 +2,23 @@ import React, { useState } from 'react';
 import { Link, useRouter } from 'expo-router';
 import axios from 'axios';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import * as Font from 'expo-font';
+
+import GlobalStyles, { colors, fonts } from './globalStyles';
 
 function LoginPage() {
     const router = useRouter(); // Use useRouter from expo-router instead of useNavigation
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+
+    async function loadFonts() {
+      await Font.loadAsync({
+          'kanit-light': require('../../assets/fonts/Kanit-Light.ttf'),
+          'kanit-regular': require('../../assets/fonts/Kanit-Regular.ttf'),
+          'kanit-bold': require('../../assets/fonts/Kanit-Bold.ttf'),
+      });
+    }
+    loadFonts() // Call the function to load the fonts
 
     const handleLogin = () => {
         const userData = {
@@ -26,22 +38,24 @@ function LoginPage() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>AI Photo Booth App</Text>
+            <Text style={fonts.display}>Lumetry AI Photo Booth</Text>
             <TextInput
-                style={styles.input}
+                style={GlobalStyles.textInput}
                 placeholder="Username"
                 onChangeText={setUsername}
                 value={username}
+                placeholderTextColor={colors.lightGray}
             />
             <TextInput
-                style={styles.input}
+                style={GlobalStyles.textInput}
                 placeholder="Password"
                 onChangeText={setPassword}
                 value={password}
                 secureTextEntry
+                placeholderTextColor={colors.lightGray}
             />
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Login</Text>
+            <TouchableOpacity style={GlobalStyles.button} onPress={handleLogin}>
+                <Text style={GlobalStyles.buttonText}>Login</Text>
             </TouchableOpacity>
         </View>
     );
@@ -53,34 +67,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: 'white',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#420475',
-  },
-  input: {
-    width: '100%',
-    height: 40,
-    borderColor: '#420475',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-  },
-  button: {
-    backgroundColor: '#420475',
-    padding: 10,
-    borderRadius: 5,
-    width: '100%',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
+    backgroundColor: colors.gray[300],
   },
 });
 

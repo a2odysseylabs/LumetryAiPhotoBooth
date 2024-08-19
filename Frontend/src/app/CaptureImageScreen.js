@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, Image, Modal, TextInpu
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
+import GlobalStyles, { colors, fonts, spacing } from './globalStyles';
 
 export default function CaptureImageScreen() {
   const [facing, setFacing] = useState('back');
@@ -23,10 +24,10 @@ export default function CaptureImageScreen() {
 
   if (!permission.granted) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.message}>We need your permission to show the camera</Text>
-        <TouchableOpacity style={styles.permissionButton} onPress={requestPermission}>
-          <Text style={styles.buttonText}>Grant Permission</Text>
+      <View style={{...styles.container, flex: 1, alignItems: 'center'}}>
+        <Text style={{...fonts.display, textAlign: 'center'}}>We need your permission to show the camera</Text>
+        <TouchableOpacity style={{...GlobalStyles.button, width: 'fit-content'}} onPress={requestPermission}>
+          <Text style={GlobalStyles.buttonText}>Grant Permission</Text>
         </TouchableOpacity>
       </View>
     );
@@ -98,12 +99,12 @@ const handleSubmit = async () => {
 
     // Send the photo data to the backend
     const response = await axios.post('http://localhost:5001/add-photo', photoData);
-    console.log(response);
+    // console.log(response);
     
     if (response.data.status === 'ok') {
       Alert.alert('Success', 'Photo added to event gallery successfully.');
       router.replace({
-        pathname: '/CaptureImageScreen',
+        pathname: '/SuccessScreen',
         params: { eventID: eventID },
       });      
     } else {
@@ -121,14 +122,14 @@ const handleSubmit = async () => {
     <View style={styles.container}>
       {photoUri ? (
         <View style={styles.preview}>
-          <Text style={styles.title}>Photo Preview</Text>
+          <Text style={fonts.display}>Photo Preview</Text>
           <Image source={{ uri: photoUri }} style={styles.imagePreview} />
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={retakePicture}>
-              <Text style={styles.buttonText}>Retake</Text>
+            <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent'}} onPress={retakePicture}>
+              <Text style={GlobalStyles.buttonText}>Retake</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, styles.continueButton]} onPress={handleContinue}>
-              <Text style={styles.buttonText}>Continue</Text>
+            <TouchableOpacity style={[GlobalStyles.button]} onPress={handleContinue}>
+              <Text style={GlobalStyles.buttonText}>Continue</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -139,11 +140,11 @@ const handleSubmit = async () => {
           ref={(ref) => setCameraRef(ref)}
         >
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-              <Text style={styles.buttonText}>Flip Camera</Text>
+            <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: colors.gray[300]}} onPress={toggleCameraFacing}>
+              <Text style={GlobalStyles.buttonText}>Flip Camera</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, styles.captureButton]} onPress={takePicture}>
-              <Text style={styles.buttonText}>Take Picture</Text>
+            <TouchableOpacity style={GlobalStyles.button} onPress={takePicture}>
+              <Text style={GlobalStyles.buttonText}>Take Picture</Text>
             </TouchableOpacity>
           </View>
         </CameraView>
@@ -160,17 +161,19 @@ const handleSubmit = async () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
-            <Text style={styles.modalTitle}>Enter Your Details</Text>
+          <Text style={fonts.display}>Share Your Photos</Text>
+          <Text style={styles.modalSubText}>How would you like to receive your photos?</Text>
             <TextInput
-              style={styles.input}
+              style={GlobalStyles.textInput}
               placeholder="Phone Number"
               placeholderTextColor="#999"
               keyboardType="phone-pad"
               value={phoneNumber}
               onChangeText={setPhoneNumber}
             />
+            <Text style={styles.modalSubText}>OR</Text>
             <TextInput
-              style={styles.input}
+              style={GlobalStyles.textInput}
               placeholder="Email"
               placeholderTextColor="#999"
               keyboardType="email-address"
@@ -178,11 +181,11 @@ const handleSubmit = async () => {
               onChangeText={setEmail}
             />
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.button} onPress={() => setModalVisible(false)}>
-                <Text style={styles.buttonText}>Cancel</Text>
+              <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent'}} onPress={() => setModalVisible(false)}>
+                <Text style={GlobalStyles.buttonText}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, styles.continueButton]} onPress={handleSubmit}>
-                <Text style={styles.buttonText}>Submit</Text>
+              <TouchableOpacity style={GlobalStyles.button} onPress={handleSubmit}>
+                <Text style={GlobalStyles.buttonText}>Submit</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -195,13 +198,8 @@ const handleSubmit = async () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
-    justifyContent: 'center',
-  },
-  message: {
-    textAlign: 'center',
-    paddingBottom: 10,
-    color: '#fff',
+    backgroundColor: colors.gray[300],
+    justifyContent: 'center', // Center the loader
   },
   camera: {
     flex: 1,
@@ -209,31 +207,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonContainer: {
+    display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 20,
-  },
-  button: {
-    backgroundColor: '#1E1E1E',
-    borderRadius: 8,
-    padding: 15,
-    alignItems: 'center',
-  },
-  captureButton: {
-    backgroundColor: '#8B0000', // Dark red color
-  },
-  continueButton: {
-    backgroundColor: '#8B0000', // Dark red color
-  },
-  permissionButton: {
-    backgroundColor: '#8B0000', // Dark red color
-    padding: 10,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
+    justifyContent: 'center',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
   },
   preview: {
     flex: 1,
@@ -243,12 +221,7 @@ const styles = StyleSheet.create({
   imagePreview: {
     width: '100%',
     height: '70%',
-    borderRadius: 10,
-  },
-  title: {
-    color: '#FFFFFF',
-    fontSize: 24,
-    marginBottom: 10,
+    marginBottom: spacing.lg,
   },
   modalContainer: {
     flex: 1,
@@ -263,18 +236,10 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
   },
-  modalTitle: {
-    fontSize: 20,
-    color: '#FFFFFF',
-    marginBottom: 20,
-  },
-  input: {
-    width: '100%',
-    color: '#FFFFFF',
+  modalSubText: {
+    color: '#AAA',
     fontSize: 16,
-    marginBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#333',
-    paddingVertical: 5,
+    textAlign: 'center',
+    marginBottom: spacing.md,
   },
 });
