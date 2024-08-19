@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, Image, Modal, TextInpu
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
+import { SERVER_LINK } from '@env';
 import GlobalStyles, { colors, fonts, spacing } from './globalStyles';
 
 export default function CaptureImageScreen() {
@@ -39,7 +40,7 @@ export default function CaptureImageScreen() {
 
   const takePicture = async () => {
     if (cameraRef) {
-      const photo = await cameraRef.takePictureAsync();
+      const photo = await cameraRef.takePictureAsync({ base64: true });
       setPhotoUri(photo.uri);
       const source = photo.base64;
       let base64Img = `data:image/jpg;base64,${source}`;
@@ -98,7 +99,7 @@ const handleSubmit = async () => {
     };
 
     // Send the photo data to the backend
-    const response = await axios.post('http://localhost:5001/add-photo', photoData);
+    const response = await axios.post(`${SERVER_LINK}/add-photo`, photoData);
     // console.log(response);
     
     if (response.data.status === 'ok') {

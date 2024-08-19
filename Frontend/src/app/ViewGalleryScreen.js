@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, Alert, Dimensions, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
+import { SERVER_LINK } from '@env';
 import GlobalStyles, { borderRadius, colors, fonts, spacing } from './globalStyles';
 
 export default function ViewGalleryScreen() {
@@ -14,7 +15,7 @@ export default function ViewGalleryScreen() {
   useEffect(() => {
     const fetchEventGallery = async () => {
       try {
-        const response = await axios.get('http://localhost:5001/events');
+        const response = await axios.get(`${SERVER_LINK}/events`);
         const events = response.data.data;
         const event = events.find(event => event._id === eventID);
 

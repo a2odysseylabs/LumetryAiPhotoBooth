@@ -3,6 +3,7 @@ import { Link, useRouter } from 'expo-router';
 import axios from 'axios';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import * as Font from 'expo-font';
+import { SERVER_LINK } from '@env';
 
 import GlobalStyles, { colors, fonts } from './globalStyles';
 
@@ -25,7 +26,7 @@ function LoginPage() {
             username: username,
             password: password,
         };
-        axios.post('http://localhost:5001/login-user', userData)
+        axios.post(`${SERVER_LINK}/login-user`, userData)
             .then(res => {
                 if (res.data.status === 'ok') {
                     router.push('/events'); // Navigate using the router from expo-router

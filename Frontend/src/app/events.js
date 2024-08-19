@@ -7,6 +7,7 @@ import Modal from 'react-native-modal';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
+import { SERVER_LINK } from '@env';
 
 import GlobalStyles, { borderRadius, colors, fonts, spacing } from './globalStyles';
 
@@ -28,7 +29,7 @@ export default function EventsDisplay() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get('http://localhost:5001/events');
+        const response = await axios.get(`${SERVER_LINK}/events`);
         setEvents(response.data.data);
       } catch (error) {
         console.error('Error fetching events:', error);
@@ -57,7 +58,7 @@ export default function EventsDisplay() {
     }
 
     try {
-      const response = await axios.post('http://localhost:5001/create-event', {
+      const response = await axios.post(`${SERVER_LINK}/create-event`, {
         eventName: newEventName,
         eventDate: newEventDate.toISOString(),
         promptTitle: newPromptTitle,

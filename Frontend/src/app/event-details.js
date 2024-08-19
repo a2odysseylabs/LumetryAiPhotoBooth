@@ -4,13 +4,11 @@ import { StatusBar } from 'expo-status-bar';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
-
+import { SERVER_LINK } from '@env';
 import GlobalStyles, { borderRadius, colors, fonts, spacing } from './globalStyles';
 
 export default function CreateEvents() {
   const router = useRouter();
-  const navigation = useNavigation();
   const { eventID } = useLocalSearchParams();
 
   const [eventid, seteventID] = useState(null);
@@ -24,7 +22,7 @@ export default function CreateEvents() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get('http://localhost:5001/events');
+        const response = await axios.get(`${SERVER_LINK}/events`);
         const events = response.data.data;
         const event = events.find(event => event._id === eventID);
 
@@ -53,7 +51,7 @@ export default function CreateEvents() {
 
   const handleSave = async () => {
     try {
-      const response = await axios.post('http://localhost:5001/update-event', {
+      const response = await axios.post(`${SERVER_LINK}/update-event`, {
         eventID: eventid,
         eventName: eventNameInput,
         eventDate,
@@ -149,7 +147,7 @@ export default function CreateEvents() {
       />
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent', width: '48%'}} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent', width: '48%'}} onPress={() => router.back()}>
           <Text style={GlobalStyles.buttonText}>Cancel</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{...GlobalStyles.button, width: '48%'}} onPress={handleSave}>
