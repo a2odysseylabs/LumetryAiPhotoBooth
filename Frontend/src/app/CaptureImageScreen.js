@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, Image, Modal, TextInpu
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
-import { SERVER_LINK } from '@env';
+import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, SERVER_LINK } from '@env';
 import GlobalStyles, { colors, fonts, spacing } from './globalStyles';
 
 export default function CaptureImageScreen() {
@@ -59,12 +59,11 @@ export default function CaptureImageScreen() {
   const uploadImageToCloudinary = async (photoUri) => {
     const data = new FormData();
     data.append('file', photo);
-    data.append('upload_preset','lumetry');
-    data.append("cloud_name", "dfnggrmqp");
+    data.append('upload_preset',CLOUDINARY_UPLOAD_PRESET);
 
     try {
         const response = await axios.post(
-          `https://api.cloudinary.com/v1_1/dfnggrmqp/image/upload`,
+          `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
           data,
           {
             headers: {
