@@ -4,6 +4,7 @@ import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, SERVER_LINK } from '@env';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import GlobalStyles, { colors, fonts, spacing } from './globalStyles';
 
 const { width } = Dimensions.get('window');
@@ -146,11 +147,14 @@ const handleSubmit = async () => {
           ref={(ref) => setCameraRef(ref)}
         >
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: colors.gray[300]}} onPress={toggleCameraFacing}>
-              <Text style={GlobalStyles.buttonText}>Flip Camera</Text>
+            <TouchableOpacity style={{width: 'fit-content'}} onPress={() => router.back()}>
+              <FontAwesome name="arrow-left" size={24} color={colors.text} />
             </TouchableOpacity>
-            <TouchableOpacity style={GlobalStyles.button} onPress={takePicture}>
+            <TouchableOpacity style={{...GlobalStyles.button, width: '50%'}} onPress={takePicture}>
               <Text style={GlobalStyles.buttonText}>Take Picture</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{width: 'fit-content'}} onPress={toggleCameraFacing}>
+              <FontAwesome name="refresh" size={24} color={colors.text} />
             </TouchableOpacity>
           </View>
         </CameraView>
@@ -215,7 +219,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'center',
+    alignItems: 'center',
     gap: spacing.md,
     marginBottom: spacing.lg,
   },

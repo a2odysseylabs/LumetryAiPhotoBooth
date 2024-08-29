@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, Alert, Dimensions, TouchableOpacity, Picker } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, Alert, Dimensions, TouchableOpacity } from 'react-native';
+import {Picker} from '@react-native-picker/picker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import { SERVER_LINK } from '@env';
@@ -54,14 +55,14 @@ export default function ViewGalleryScreen() {
   if (loading) {
     return (
       <View style={styles.container}>
-        <Text style={fonts.display}>Loading gallery...</Text>
+        <Text style={{...fonts.display, fontSize: fonts.size_24}}>Loading gallery...</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={{...fonts.display, textAlign: 'center'}}>Gallery for {eventName}</Text>
+      <Text style={{...fonts.display, fontSize: fonts.size_24, textAlign: 'center'}}>Gallery for {eventName}</Text>
       
       {/* Dropdown for sorting */}
       <Picker
@@ -96,7 +97,7 @@ export default function ViewGalleryScreen() {
           ))}
         </ScrollView>
       ) : (
-        <Text style={fonts.display}>There is nothing to display in the gallery.</Text>
+        <Text style={{...fonts.display, fontSize: fonts.size_24}}>There is nothing to display in the gallery.</Text>
       )}
     </View>
   );

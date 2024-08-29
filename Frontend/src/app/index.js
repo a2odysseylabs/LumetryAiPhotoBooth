@@ -1,25 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Image } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import axios from 'axios';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import * as Font from 'expo-font';
 import { SERVER_LINK } from '@env';
 
-import GlobalStyles, { colors, fonts } from './globalStyles';
+import GlobalStyles, { colors, fonts, spacing } from './globalStyles';
 
 function LoginPage() {
     const router = useRouter(); // Use useRouter from expo-router instead of useNavigation
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    async function loadFonts() {
-      await Font.loadAsync({
-          'kanit-light': require('../../assets/fonts/Kanit-Light.ttf'),
-          'kanit-regular': require('../../assets/fonts/Kanit-Regular.ttf'),
-          'kanit-bold': require('../../assets/fonts/Kanit-Bold.ttf'),
-      });
-    }
-    loadFonts() // Call the function to load the fonts
+    useEffect(() => {
+        async function loadFonts() {
+          await Font.loadAsync({
+            'kanit-light': require('../../assets/fonts/Kanit-Light.ttf'),
+            'kanit-regular': require('../../assets/fonts/Kanit-Regular.ttf'),
+            'kanit-bold': require('../../assets/fonts/Kanit-Bold.ttf'),
+          });
+        }
+        loadFonts();
+    }, []);
 
     const handleLogin = () => {
         const userData = {
@@ -39,7 +42,8 @@ function LoginPage() {
 
     return (
         <View style={styles.container}>
-            <Text style={fonts.display}>Lumetry AI Photo Booth</Text>
+            <Image source={require('../../assets/lumetry.svg')} style={{}} />
+            <Text style={{...fonts.wide, color: colors.lightGray, textAlign: "center", marginBottom: spacing.xl}}>AI Photo Booth</Text>
             <TextInput
                 style={GlobalStyles.textInput}
                 placeholder="Username"
