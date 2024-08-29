@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Image, Modal, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Image, Modal, TextInput, Dimensions } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, SERVER_LINK } from '@env';
 import GlobalStyles, { colors, fonts, spacing } from './globalStyles';
+
+const { width } = Dimensions.get('window');
+const imageSize = width * 0.8;
+
 
 export default function CaptureImageScreen() {
   const [facing, setFacing] = useState('back');
@@ -123,7 +127,9 @@ const handleSubmit = async () => {
       {photoUri ? (
         <View style={styles.preview}>
           <Text style={fonts.display}>Photo Preview</Text>
-          <Image source={{ uri: photoUri }} style={styles.imagePreview} />
+          <View style={styles.imageContainer}>
+            <Image source={{ uri: photoUri }} style={styles.imagePreview} />
+          </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent'}} onPress={retakePicture}>
               <Text style={GlobalStyles.buttonText}>Retake</Text>
@@ -215,13 +221,22 @@ const styles = StyleSheet.create({
   },
   preview: {
     flex: 1,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingVertical: spacing.lg,
+  },
+  imageContainer: {
+    width: imageSize,
+    height: imageSize,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
+    borderRadius: 10,
   },
   imagePreview: {
     width: '100%',
-    height: '70%',
-    marginBottom: spacing.lg,
+    height: '100%',
+    resizeMode: 'cover',
   },
   modalContainer: {
     flex: 1,

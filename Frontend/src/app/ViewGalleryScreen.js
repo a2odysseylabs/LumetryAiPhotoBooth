@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, Alert, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, Alert, Dimensions, TouchableOpacity, Picker } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import { SERVER_LINK } from '@env';
@@ -11,6 +11,7 @@ export default function ViewGalleryScreen() {
   const [eventGallery, setEventGallery] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
+  const [sortOption, setSortOption] = useState('all');
 
   useEffect(() => {
     const fetchEventGallery = async () => {
@@ -35,6 +36,21 @@ export default function ViewGalleryScreen() {
     fetchEventGallery();
   }, [eventID]);
 
+  const sortGallery = (gallery, option) => {
+    switch(option) {
+      case 'received':
+        return gallery.filter(item => !item.sent || item.sent === 'received');
+      case 'sent':
+        return gallery.filter(item => item.sent === 'sent');
+      case 'processing':
+        return gallery.filter(item => item.sent === 'processing');
+      default:
+        return gallery;
+    }
+  };
+
+  const sortedGallery = sortGallery(eventGallery.slice().reverse(), sortOption);
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -46,14 +62,28 @@ export default function ViewGalleryScreen() {
   return (
     <View style={styles.container}>
       <Text style={{...fonts.display, textAlign: 'center'}}>Gallery for {eventName}</Text>
+      
+      {/* Dropdown for sorting */}
+      <Picker
+        selectedValue={sortOption}
+        style={{ height: 50, width: 150, marginBottom: spacing.md }}
+        onValueChange={(itemValue) => setSortOption(itemValue)}
+      >
+        <Picker.Item label="All" value="all" />
+        <Picker.Item label="Received" value="received" />
+        <Picker.Item label="Sent" value="sent" />
+        <Picker.Item label="Processing" value="processing" />
+      </Picker>
+
       <TouchableOpacity 
         style={{...GlobalStyles.button, backgroundColor: 'transparent', textAlign: 'center', marginBottom: spacing.lg}} 
         onPress={() => router.back()} >
         <Text style={GlobalStyles.buttonText}>Go back</Text>
       </TouchableOpacity>
-      {eventGallery.length > 0 ? (
+      
+      {sortedGallery.length > 0 ? (
         <ScrollView contentContainerStyle={styles.scrollView}>
-          {eventGallery.map((item, index) => (
+          {sortedGallery.map((item, index) => (
             <Image 
               key={index}
               source={{ uri: item.imageUrl }}
