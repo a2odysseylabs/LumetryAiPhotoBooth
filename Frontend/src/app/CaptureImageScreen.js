@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, Image, Modal, TextInput, Dimensions } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -20,8 +20,34 @@ export default function CaptureImageScreen() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
   const [secureUrl, setSecureUrl] = useState(null);
+  const [logoUrl, setLogoUrl] = useState('');
+  const [logoPlacement, setLogoPlacement] = useState('');
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { eventID } = useLocalSearchParams();
+
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await axios.get(`${SERVER_LINK}/events`);
+        const events = response.data.data;
+        const event = events.find(event => event._id === eventID);
+
+        if (event) {
+          setLogoUrl(event.event_logo);
+          setLogoPlacement(event.logo_placement);
+        }
+      } catch (error) {
+        console.error('Error fetching events:', error);
+        Alert.alert('Error', 'Failed to fetch event details');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, [eventID]);
 
   if (!permission) {
     return <View />;
@@ -124,6 +150,12 @@ const handleSubmit = async () => {
 
   return (
     <View style={styles.container}>
+      {logoUrl && (
+      <Image 
+        source={{ uri: logoUrl }} 
+        style={{ width: 25, height: 25, alignSelf: 'center', marginTop: 20 }} 
+      />
+    )}
       {photoUri ? (
         <View style={styles.preview}>
           <Text style={fonts.display}>Photo Preview</Text>
