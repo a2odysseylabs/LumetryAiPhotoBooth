@@ -122,12 +122,18 @@ export default function CreateEvents() {
     });
   
     if (!result.canceled) {
-      setLogoUrl(result.assets[0].uri);
-      setLoading(true);
-      const secureUrl = await uploadImageToCloudinary(result.assets[0].uri);
-      setLogoUrl(secureUrl);
-      setLoading(false);
-    }
+      try {
+        setLogoUrl(result.assets[0].uri);
+        setLoading(true);
+        const secureUrl = await uploadImageToCloudinary(result.assets[0].uri);
+        setLogoUrl(secureUrl);
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        Alert.alert('Error', 'Failed to upload image. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    }    
   };
   
 
