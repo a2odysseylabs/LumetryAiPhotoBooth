@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -74,6 +74,7 @@ export default function CreateEvents() {
       return response.data.secure_url;
     } catch (error) {
       console.error('Error uploading image to Cloudinary:', error.response ? error.response.data : error.message);
+      Alert.alert('Error', 'Error uploading image to Cloudinary');
       throw new Error('Failed to upload image');
     }
   };
@@ -160,6 +161,7 @@ export default function CreateEvents() {
   }
 
   return (
+    <ScrollView>
     <View style={styles.container}>
       <StatusBar style="light" />
 
@@ -252,6 +254,7 @@ export default function CreateEvents() {
         <Text style={GlobalStyles.buttonText}>View Gallery</Text>
       </TouchableOpacity>
     </View>
+    </ScrollView>
   );
 }
   

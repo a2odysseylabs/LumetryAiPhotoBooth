@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Pressable, ScrollView, TouchableOpacity, ActivityIndicator, TextInput, Alert, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Pressable, ScrollView, TouchableOpacity, ActivityIndicator, TextInput, Alert, Dimensions, Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
 import Modal from 'react-native-modal';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from 'react-native-ui-datepicker';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { SERVER_LINK } from '@env';
@@ -43,10 +43,6 @@ export default function EventsDisplay() {
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
-  };
-
-  const handleDateChange = (event, selectedDate) => {
-    setNewEventDate(selectedDate || newEventDate);
   };
 
   const handleSaveNewEvent = async () => {
@@ -108,11 +104,7 @@ export default function EventsDisplay() {
         }
       >
         <Text 
-          style={{ 
-            color: colors.text, 
-            fontSize: fonts.size_18, 
-            fontFamily: fonts.bold,
-          }}
+          style={{...fonts.display, fontSize: fonts.size_18 }}
         >
           {event.event_name}
         </Text>
@@ -145,12 +137,12 @@ export default function EventsDisplay() {
     <TouchableOpacity 
       style={{
         ...styles.addNewEvent,
-        width: dimensions.width > 600 ? "30%" : "100%"
+        width: dimensions.width > 600 ? "31.97%" : "100%"
       }} 
       onPress={toggleModal}
     >
       <FontAwesome name="plus" size={48} color={colors.gray[100]} />
-      <Text style={styles.addNewEventText}>Add New Event</Text>
+      <Text style={{...fonts.display, fontSize: fonts.size_18}}>Add New Event</Text>
     </TouchableOpacity>
   );
 
@@ -166,13 +158,23 @@ export default function EventsDisplay() {
     <View style={styles.container}>
       <StatusBar style="light" />
 
-      <Text style={fonts.display}>Lumetry AI Photo Booth</Text>
-      <Text style={fonts.display}>Select or create event</Text>
+      <Image source={require('../../assets/lumetry.svg')} style={{}} />
+      <Text style={{...fonts.wide, color: colors.lightGray, textAlign: "center", marginBottom: spacing.xl}}>AI Photo Booth</Text>
+
+      <Text 
+        style={{
+          ...fonts.display, 
+          fontSize: fonts.size_24,
+          marginBottom: spacing.sm,
+        }}>
+          Select or create event
+        </Text>
 
       <View style={{ 
         display: 'flex',
         flexDirection: 'row',
         gap: spacing.md,
+        marginBottom: spacing.md,
       }}>
         <TextInput
           style={{ ...GlobalStyles.textInput, width: 'initial', flexGrow: 1, marginBottom: 0 }}
@@ -194,6 +196,7 @@ export default function EventsDisplay() {
           flex: dimensions.width > 600 ? 3 : 1,
           flexDirection: 'row',
           flexWrap: 'wrap',
+          justifyContent: 'center',
           gap: spacing.md,
           marginTop: spacing.xl,
         }}>
@@ -204,8 +207,14 @@ export default function EventsDisplay() {
 
       {/* ADD EVENT MODAL */}
       <Modal isVisible={isModalVisible}>
-        <View style={{backgroundColor: colors.gray[300], padding: spacing.lg, borderRadius: borderRadius.lg}}>
-          <Text style={fonts.display}>Add New Event</Text>
+        <View 
+          style={{
+            backgroundColor: colors.gray[300], 
+            padding: spacing.lg, 
+            borderRadius: borderRadius.lg
+          }}
+        >
+          <Text style={{...fonts.display, fontSize: fonts.size_24, marginBottom: spacing.lg}}>Add New Event</Text>
 
           <TextInput
             style={GlobalStyles.textInput}
@@ -217,11 +226,16 @@ export default function EventsDisplay() {
 
           <View style={{...GlobalStyles.textInput, display: 'flex', alignItems: 'start', paddingLeft: 0}}>
             <DateTimePicker
-              value={newEventDate}
-              mode="date"
-              display="default"
-              onChange={handleDateChange}
-              themeVariant="dark"
+              mode="single"
+              date={newEventDate}
+              onChange={(params) => setNewEventDate(params.date)}
+              selectedItemColor={colors.primary}
+              headerButtonColor={colors.lightGray}
+              calendarTextStyle={{color: colors.text}}
+              headerTextStyle={{color: colors.text}}
+              weekDaysTextStyle={{color: colors.text}}
+              todayContainerStyle={{backgroundColor: colors.gray[200]}}
+              todayTextStyle={{color: colors.text}}
             />
           </View>
 
@@ -251,7 +265,7 @@ export default function EventsDisplay() {
 
           <View style={GlobalStyles.buttonContainer}>
             <TouchableOpacity style={{...GlobalStyles.button, width: '48%', backgroundColor: 'transparent'}} onPress={toggleModal}>
-              <Text style={GlobalStyles.buttonText}>Cancel</Text>
+              <Text style={GlobalStyles.buttonText}>Back</Text>
             </TouchableOpacity>
             <TouchableOpacity style={{...GlobalStyles.button, width: '48%'}} onPress={handleSaveNewEvent}>
               <Text style={GlobalStyles.buttonText}>Save</Text>
@@ -278,12 +292,14 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     borderColor: colors.gray[100],
     justifyContent: 'center',
-    width: '30%',
+    width: '31.97%',
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.lg,
   },
-  addNewEventText: {
-    color: colors.text,
-    fontSize: fonts.size_18,
-    fontFamily: fonts.bold,
-    textAlign: 'center',
-  },
+  // addNewEventText: {
+  //   color: colors.text,
+  //   fontSize: fonts.size_18,
+  //   fontFamily: fonts.bold,
+  //   textAlign: 'center',
+  // },
 });
