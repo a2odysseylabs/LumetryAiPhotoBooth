@@ -74,6 +74,7 @@ export default function CreateEvents() {
       return response.data.secure_url;
     } catch (error) {
       console.error('Error uploading image to Cloudinary:', error.response ? error.response.data : error.message);
+      Alert.alert('Error', 'Error uploading image to Cloudinary');
       throw new Error('Failed to upload image');
     }
   };
