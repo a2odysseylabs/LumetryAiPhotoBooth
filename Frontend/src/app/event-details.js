@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Alert, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import DateTimePicker from 'react-native-ui-datepicker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
-import { SERVER_LINK } from '@env';
+import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, SERVER_LINK } from '@env';
+import * as ImagePicker from 'expo-image-picker';
+import { Picker } from '@react-native-picker/picker';
 import GlobalStyles, { borderRadius, colors, fonts, spacing } from './globalStyles';
 
 export default function CreateEvents() {
@@ -18,6 +20,9 @@ export default function CreateEvents() {
   const [prompt, setPrompt] = useState('');
   const [negativePrompt, setNegativePrompt] = useState('');
   const [loading, setLoading] = useState(true);
+  const [logoUrl, setLogoUrl] = useState('');
+  const [logoPlacement, setLogoPlacement] = useState('');
+
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -33,6 +38,8 @@ export default function CreateEvents() {
           setPromptTitle(event.promptTitle);
           setPrompt(event.prompt);
           setNegativePrompt(event.negative_prompt);
+          setLogoUrl(event.event_logo);
+          setLogoPlacement(event.logo_placement);
         }
       } catch (error) {
         console.error('Error fetching events:', error);
@@ -45,15 +52,45 @@ export default function CreateEvents() {
     fetchEvents();
   }, [eventID]);
 
+  const handleDateChange = (event, selectedDate) => {
+    setEventDate(selectedDate || eventDate);
+  };
+
+  const uploadImageToCloudinary = async (photoUri) => {
+    const data = new FormData();
+    data.append('file', photoUri);
+    data.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+  
+    try {
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+        data,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      return response.data.secure_url;
+    } catch (error) {
+      console.error('Error uploading image to Cloudinary:', error.response ? error.response.data : error.message);
+      throw new Error('Failed to upload image');
+    }
+  };
+  
+
   const handleSave = async () => {
     try {
+      setLoading(true);
       const response = await axios.post(`${SERVER_LINK}/update-event`, {
         eventID: eventid,
         eventName: eventNameInput,
         eventDate,
         promptTitle,
         prompt,
-        negativePrompt
+        negativePrompt,
+        event_logo: logoUrl,
+        logo_placement: logoPlacement,
       });
 
       if (response.data.status === 'ok') {
@@ -61,16 +98,49 @@ export default function CreateEvents() {
       } else {
         Alert.alert('Error', response.data.data);
       }
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       console.error('Error updating event:', error);
       Alert.alert('Error', 'Failed to update event');
     }
   };
 
+  const pickImage = async () => {
+    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  
+    if (permissionResult.status !== 'granted') {
+      Alert.alert('Permission Denied', 'You need to grant permission to access the media library.');
+      return;
+    }
+  
+    // Open image picker and allow the user to select an image
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
+  
+    if (!result.canceled) {
+      try {
+        setLogoUrl(result.assets[0].uri);
+        setLoading(true);
+        const secureUrl = await uploadImageToCloudinary(result.assets[0].uri);
+        setLogoUrl(secureUrl);
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        Alert.alert('Error', 'Failed to upload image. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    }    
+  };
+  
+
   const handleStartEvent = () => {
     router.push({
       pathname: '/CaptureImageScreen',
-      params: { eventID: eventid },
+      params: { eventID: eventid,  event_logo: logoUrl},
     });
   };  
 
@@ -91,80 +161,98 @@ export default function CreateEvents() {
 
   return (
     <ScrollView>
-      <View style={styles.container}>
-        <StatusBar style="light" />
+    <View style={styles.container}>
+      <StatusBar style="light" />
 
-        <Text style={styles.logo}>Custom Logo</Text>
-          
-        <TextInput
-          style={GlobalStyles.textInput}
-          placeholder="Event Name"
-          placeholderTextColor={colors.lightGray}
-          onChangeText={setEventNameInput}
-          value={eventNameInput}
-          editable={false}
+      <Text style={styles.logo}>Custom Logo</Text>
+      {logoUrl && (
+        <Image 
+        source={{ uri: logoUrl }}
+          style={{ width: 50, height: 50, borderRadius: 10, marginBottom: 20 }} 
         />
-        {/* <TextInput
-          style={GlobalStyles.textInput}
-          placeholder="Event Date"
-          placeholderTextColor={colors.lightGray}
-          onChangeText={setEventDate}
+      )}
+        
+      <TextInput
+        style={GlobalStyles.textInput}
+        placeholder="Event Name"
+        placeholderTextColor={colors.lightGray}
+        onChangeText={setEventNameInput}
+        value={eventNameInput}
+        editable={false}
+      />
+      {/* <TextInput
+        style={GlobalStyles.textInput}
+        placeholder="Event Date"
+        placeholderTextColor={colors.lightGray}
+        onChangeText={setEventDate}
+        value={eventDate}
+      /> */}
+      <View style={{...GlobalStyles.textInput, display: 'flex', alignItems: 'start', paddingLeft: 0}}>
+        <DateTimePicker
           value={eventDate}
-        /> */}
-        <View style={{...GlobalStyles.textInput, display: 'flex', alignItems: 'start', paddingLeft: 0}}>
-          <DateTimePicker
-            mode="single"
-            date={eventDate}
-            onChange={(params) => setEventDate(params.date)}
-            selectedItemColor={colors.primary}
-            headerButtonColor={colors.lightGray}
-            calendarTextStyle={{color: colors.text}}
-            headerTextStyle={{color: colors.text}}
-            weekDaysTextStyle={{color: colors.text}}
-            todayContainerStyle={{backgroundColor: colors.gray[200]}}
-            todayTextStyle={{color: colors.text}}
-          />
-        </View>
-          
-        <TextInput
-          style={GlobalStyles.textInput}
-          placeholder="Prompt title"
-          placeholderTextColor={colors.lightGray}
-          onChangeText={setPromptTitle}
-          value={promptTitle}
+          mode="date"
+          display="default"
+          onChange={handleDateChange}
+          themeVariant="dark" // ios only
         />
-        <TextInput
-          style={GlobalStyles.textInput}
-          placeholder="Prompt"
-          placeholderTextColor={colors.lightGray}
-          onChangeText={setPrompt}
-          value={prompt}
-        />
-        <TextInput
-          style={GlobalStyles.textInput}
-          placeholder="Negative Prompt"
-          placeholderTextColor={colors.lightGray}
-          onChangeText={setNegativePrompt}
-          value={negativePrompt}
-        />
+      </View>
+        
+      <TextInput
+        style={GlobalStyles.textInput}
+        placeholder="Prompt title"
+        placeholderTextColor={colors.lightGray}
+        onChangeText={setPromptTitle}
+        value={promptTitle}
+      />
+      <TextInput
+        style={GlobalStyles.textInput}
+        placeholder="Prompt"
+        placeholderTextColor={colors.lightGray}
+        onChangeText={setPrompt}
+        value={prompt}
+      />
+      <TextInput
+        style={GlobalStyles.textInput}
+        placeholder="Negative Prompt"
+        placeholderTextColor={colors.lightGray}
+        onChangeText={setNegativePrompt}
+        value={negativePrompt}
+      />
+      <TouchableOpacity style={{ ...GlobalStyles.button, marginBottom: spacing.md }} onPress={pickImage}>
+        <Text style={GlobalStyles.buttonText}>Select Event Logo</Text>
+      </TouchableOpacity>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent', width: '48%'}} onPress={() => router.back()}>
-            <Text style={GlobalStyles.buttonText}>Back</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={{...GlobalStyles.button, width: '48%'}} onPress={handleSave}>
-            <Text style={GlobalStyles.buttonText}>Save</Text>
-          </TouchableOpacity>
-        </View>
+      {/* Picker for logo placement */}
+      <View style={{ ...GlobalStyles.textInput, marginBottom: spacing.md }}>
+        <Picker
+          selectedValue={logoPlacement}
+          onValueChange={(itemValue) => setLogoPlacement(itemValue)}
+          style={{ height: 50, width: '100%' }}
+        >
+          <Picker.Item label="Disable" value="" />
+          <Picker.Item label="Bottom Left" value="BL" />
+          <Picker.Item label="Bottom Right" value="BR" />
+        </Picker>
+      </View>
 
-        <TouchableOpacity style={{...GlobalStyles.button, marginBottom: spacing.md}} onPress={handleStartEvent}>
-          <Text style={GlobalStyles.buttonText}>Start Event</Text>
+
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent', width: '48%'}} onPress={() => router.back()}>
+          <Text style={GlobalStyles.buttonText}>Cancel</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity style={GlobalStyles.button} onPress={handleViewGallery}>
-          <Text style={GlobalStyles.buttonText}>View Gallery</Text>
+        <TouchableOpacity style={{...GlobalStyles.button, width: '48%'}} onPress={handleSave}>
+          <Text style={GlobalStyles.buttonText}>Save</Text>
         </TouchableOpacity>
       </View>
+
+      <TouchableOpacity style={{...GlobalStyles.button, marginBottom: spacing.md}} onPress={handleStartEvent}>
+        <Text style={GlobalStyles.buttonText}>Start Event</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={GlobalStyles.button} onPress={handleViewGallery}>
+        <Text style={GlobalStyles.buttonText}>View Gallery</Text>
+      </TouchableOpacity>
+    </View>
     </ScrollView>
   );
 }
