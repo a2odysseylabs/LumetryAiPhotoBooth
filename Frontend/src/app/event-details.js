@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -123,12 +123,18 @@ export default function CreateEvents() {
     });
   
     if (!result.canceled) {
-      setLogoUrl(result.assets[0].uri);
-      setLoading(true);
-      const secureUrl = await uploadImageToCloudinary(result.assets[0].uri);
-      setLogoUrl(secureUrl);
-      setLoading(false);
-    }
+      try {
+        setLogoUrl(result.assets[0].uri);
+        setLoading(true);
+        const secureUrl = await uploadImageToCloudinary(result.assets[0].uri);
+        setLogoUrl(secureUrl);
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        Alert.alert('Error', 'Failed to upload image. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    }    
   };
   
 
@@ -155,6 +161,7 @@ export default function CreateEvents() {
   }
 
   return (
+    <ScrollView>
     <View style={styles.container}>
       <StatusBar style="light" />
 
@@ -247,6 +254,7 @@ export default function CreateEvents() {
         <Text style={GlobalStyles.buttonText}>View Gallery</Text>
       </TouchableOpacity>
     </View>
+    </ScrollView>
   );
 }
   

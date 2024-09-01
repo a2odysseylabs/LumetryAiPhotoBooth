@@ -2,14 +2,14 @@
 import { StyleSheet } from 'react-native';
 
 export const colors = {
-    primary: '#641A1A',
+    primary: '#870000',
     gray: {
         400: '#111111',
         300: '#161616',
         200: '#1A1A1A',
         100: '#272727',
     },
-    lightGray: '#999999',
+    lightGray: '#a1a1a1',
     text: '#ffffff',
 };
 
@@ -30,10 +30,17 @@ export const fonts = {
     size_32: 32,
     size_: 48,
     display: {
-        fontSize: 24,
         fontFamily: 'kanit-bold',
-        marginBottom: spacing.md,
+        letterSpacing: 1,
         color: colors.text,
+    },
+    wide: {
+        fontSize: 16,
+        textTransform: 'uppercase',
+        fontFamily: 'kanit-light',
+        letterSpacing: 11,
+        marginLeft: 11,
+        color: colors.lightGray,
     }
 };
 
@@ -79,6 +86,7 @@ const GlobalStyles = StyleSheet.create({
     buttonText: {
         color: colors.text,
         fontSize: fonts.size_18,
+        letterSpacing: 1,
         fontFamily: fonts.bold,
     },
     buttonContainer: {
