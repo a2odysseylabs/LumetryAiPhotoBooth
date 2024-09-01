@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from 'react-native-ui-datepicker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, SERVER_LINK } from '@env';
@@ -181,22 +181,20 @@ export default function CreateEvents() {
         value={eventNameInput}
         editable={false}
       />
-      {/* <TextInput
-        style={GlobalStyles.textInput}
-        placeholder="Event Date"
-        placeholderTextColor={colors.lightGray}
-        onChangeText={setEventDate}
-        value={eventDate}
-      /> */}
-      <View style={{...GlobalStyles.textInput, display: 'flex', alignItems: 'start', paddingLeft: 0}}>
-        <DateTimePicker
-          value={eventDate}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
-          themeVariant="dark" // ios only
-        />
-      </View>
+       <View style={{...GlobalStyles.textInput, display: 'flex', alignItems: 'start', paddingLeft: 0}}>
+          <DateTimePicker
+            mode="single"
+            date={eventDate}
+            onChange={(params) => setEventDate(params.date)}
+            selectedItemColor={colors.primary}
+            headerButtonColor={colors.lightGray}
+            calendarTextStyle={{color: colors.text}}
+            headerTextStyle={{color: colors.text}}
+            weekDaysTextStyle={{color: colors.text}}
+            todayContainerStyle={{backgroundColor: colors.gray[200]}}
+            todayTextStyle={{color: colors.text}}
+          />
+        </View>
         
       <TextInput
         style={GlobalStyles.textInput}
@@ -239,16 +237,16 @@ export default function CreateEvents() {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent', width: '48%'}} onPress={() => router.back()}>
-          <Text style={GlobalStyles.buttonText}>Cancel</Text>
+          <Text style={GlobalStyles.buttonText}>Back</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{...GlobalStyles.button, width: '48%'}} onPress={handleSave}>
           <Text style={GlobalStyles.buttonText}>Save</Text>
         </TouchableOpacity>
-      </View>
+        </View>
 
-      <TouchableOpacity style={{...GlobalStyles.button, marginBottom: spacing.md}} onPress={handleStartEvent}>
-        <Text style={GlobalStyles.buttonText}>Start Event</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={{...GlobalStyles.button, marginBottom: spacing.md}} onPress={handleStartEvent}>
+          <Text style={GlobalStyles.buttonText}>Start Event</Text>
+        </TouchableOpacity>
 
       <TouchableOpacity style={GlobalStyles.button} onPress={handleViewGallery}>
         <Text style={GlobalStyles.buttonText}>View Gallery</Text>
