@@ -177,23 +177,18 @@ const handleSubmit = async () => {
 
   return (
     <View style={styles.container}>
-      {logoUrl && (
-        <Image 
-          source={{ uri: logoUrl }} 
-          style={{ 
-            width: 64, 
-            height: 64, 
-            position: 'absolute', 
-            top: '16px',
-            left: '50%',
-            transform: [{ translateX: '-50%' }],
-            zIndex: 1, 
-          }} 
-        />
-      )}
       {photoUri ? (
         <View style={styles.preview}>
-          <Text style={{...fonts.display, fontSize: fonts.size_24}}>Photo Preview</Text>
+          <View style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <Image 
+                source={{ uri: logoUrl }} 
+                style={{ 
+                  width: 64, 
+                  height: 64, 
+                }} 
+                />
+            <Text style={{...fonts.display, fontSize: fonts.size_24}}>Photo Preview</Text>
+          </View>
           <View style={styles.imageContainer}>
             <Image source={{ uri: photoUri }} style={styles.imagePreview} />
           </View>
@@ -212,6 +207,20 @@ const handleSubmit = async () => {
           facing={facing}
           ref={(ref) => setCameraRef(ref)}
         >
+          {logoUrl && (
+            <Image 
+              source={{ uri: logoUrl }} 
+              style={{ 
+                width: 64, 
+                height: 64, 
+                position: 'absolute', 
+                top: '16px',
+                left: '50%',
+                transform: [{ translateX: '-50%' }],
+                zIndex: 1, 
+              }} 
+            />
+          )}
           <Text style={{...fonts.display, fontSize: '120px'}}>{isCounting && countdown}</Text>
           <View style={{...GlobalStyles.buttonContainer, marginBottom: spacing.lg}}>
             <TouchableOpacity style={{width: 'fit-content'}} onPress={() => router.back()}>
