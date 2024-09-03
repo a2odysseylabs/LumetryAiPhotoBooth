@@ -38,9 +38,16 @@ export const fonts = {
         fontSize: 16,
         textTransform: 'uppercase',
         fontFamily: 'kanit-light',
+        marginLeft: 11,
         letterSpacing: 11,
+        color: colors.lightGray,
+    },
+    inputLabelText: {
+        fontSize: 16,
+        fontFamily: 'kanit-light',
         marginLeft: 11,
         color: colors.lightGray,
+        marginBottom: spacing.sm,
     }
 };
 
@@ -83,6 +90,16 @@ const GlobalStyles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
     },
+    buttonSecondary: {
+        backgroundColor: colors.gray[400],
+        padding: spacing.md,
+        borderRadius: borderRadius.md,
+        alignItems: 'center',
+        width: '100%',
+        borderStyle: 'solid',
+        borderWidth: 2,
+        borderColor: colors.primary,
+    },
     buttonText: {
         color: colors.text,
         fontSize: fonts.size_18,
@@ -92,6 +109,7 @@ const GlobalStyles = StyleSheet.create({
     buttonContainer: {
         display: 'flex',
         flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: 'space-between',
         gap: spacing.md,
     },

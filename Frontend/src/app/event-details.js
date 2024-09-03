@@ -160,14 +160,22 @@ export default function CreateEvents() {
     <View style={styles.container}>
       <StatusBar style="light" />
 
-      <Text style={styles.logo}>Custom Logo</Text>
       {logoUrl && (
         <Image 
-        source={{ uri: logoUrl }}
-          style={{ width: 50, height: 50, borderRadius: 10, marginBottom: 20 }} 
-        />
+        source={{ uri: logoUrl }} 
+        style={{ 
+          width: 50, 
+          height: 50, 
+          borderRadius: 10, 
+          marginBottom: 24, 
+          marginRight: 'auto', 
+          marginLeft: 'auto', 
+        }} />
       )}
+      <Text style={styles.logo}>{eventNameInput}</Text>
         
+
+      <Text style={fonts.inputLabelText}>Event name</Text>
       <TextInput
         style={GlobalStyles.textInput}
         placeholder="Event Name"
@@ -176,21 +184,24 @@ export default function CreateEvents() {
         value={eventNameInput}
         editable={false}
       />
-       <View style={{...GlobalStyles.textInput, display: 'flex', alignItems: 'start', paddingLeft: 0}}>
-          <DateTimePicker
-            mode="single"
-            date={eventDate}
-            onChange={(params) => setEventDate(params.date)}
-            selectedItemColor={colors.primary}
-            headerButtonColor={colors.lightGray}
-            calendarTextStyle={{color: colors.text}}
-            headerTextStyle={{color: colors.text}}
-            weekDaysTextStyle={{color: colors.text}}
-            todayContainerStyle={{backgroundColor: colors.gray[200]}}
-            todayTextStyle={{color: colors.text}}
-          />
-        </View>
+
+      <Text style={fonts.inputLabelText}>Event date</Text>
+      <View style={{...GlobalStyles.textInput, display: 'flex', alignItems: 'start', paddingLeft: 0}}>
+        <DateTimePicker
+          mode="single"
+          date={eventDate}
+          onChange={(params) => setEventDate(params.date)}
+          selectedItemColor={colors.primary}
+          headerButtonColor={colors.lightGray}
+          calendarTextStyle={{color: colors.text}}
+          headerTextStyle={{color: colors.text}}
+          weekDaysTextStyle={{color: colors.text}}
+          todayContainerStyle={{backgroundColor: colors.gray[200]}}
+          todayTextStyle={{color: colors.text}}
+        />
+      </View>
         
+      <Text style={fonts.inputLabelText}>Event theme</Text>
       <TextInput
         style={GlobalStyles.textInput}
         placeholder="Prompt title"
@@ -198,6 +209,8 @@ export default function CreateEvents() {
         onChangeText={setPromptTitle}
         value={promptTitle}
       />
+
+      <Text style={fonts.inputLabelText}>AI generative propmy</Text>
       <TextInput
         style={GlobalStyles.textInput}
         placeholder="Prompt"
@@ -205,6 +218,8 @@ export default function CreateEvents() {
         onChangeText={setPrompt}
         value={prompt}
       />
+
+      <Text style={fonts.inputLabelText}>Negative prompt</Text>
       <TextInput
         style={GlobalStyles.textInput}
         placeholder="Negative Prompt"
@@ -212,16 +227,16 @@ export default function CreateEvents() {
         onChangeText={setNegativePrompt}
         value={negativePrompt}
       />
-      <TouchableOpacity style={{ ...GlobalStyles.button, marginBottom: spacing.md }} onPress={pickImage}>
-        <Text style={GlobalStyles.buttonText}>Select Event Logo</Text>
-      </TouchableOpacity>
 
-      {/* Picker for logo placement */}
-      <View style={{ ...GlobalStyles.textInput, marginBottom: spacing.md }}>
+      <Text style={fonts.inputLabelText}>Select event logo & placement</Text>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={{ ...GlobalStyles.buttonSecondary, marginBottom: spacing.md, width: '48%' }} onPress={pickImage}>
+          <Text style={GlobalStyles.buttonText}>Upload logo</Text>
+        </TouchableOpacity>
         <Picker
           selectedValue={logoPlacement}
           onValueChange={(itemValue) => setLogoPlacement(itemValue)}
-          style={{ height: 50, width: '100%' }}
+          style={{ ...GlobalStyles.textInput, marginBottom: spacing.md, width: '48%' }}
         >
           <Picker.Item label="Disable" value="" />
           <Picker.Item label="Bottom Left" value="BL" />
@@ -231,19 +246,19 @@ export default function CreateEvents() {
 
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent', width: '48%'}} onPress={() => router.back()}>
-          <Text style={GlobalStyles.buttonText}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{...GlobalStyles.button, width: '48%'}} onPress={handleSave}>
-          <Text style={GlobalStyles.buttonText}>Save</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent', width: '48%'}} onPress={() => router.back()}>
+            <Text style={GlobalStyles.buttonText}>Back</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{...GlobalStyles.button, width: '48%'}} onPress={handleSave}>
+            <Text style={GlobalStyles.buttonText}>Save</Text>
+          </TouchableOpacity>
         </View>
 
         <TouchableOpacity style={{...GlobalStyles.button, marginBottom: spacing.md}} onPress={handleStartEvent}>
           <Text style={GlobalStyles.buttonText}>Start Event</Text>
         </TouchableOpacity>
 
-      <TouchableOpacity style={GlobalStyles.button} onPress={handleViewGallery}>
+      <TouchableOpacity style={GlobalStyles.buttonSecondary} onPress={handleViewGallery}>
         <Text style={GlobalStyles.buttonText}>View Gallery</Text>
       </TouchableOpacity>
     </View>

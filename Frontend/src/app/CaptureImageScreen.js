@@ -5,7 +5,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, SERVER_LINK } from '@env';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import GlobalStyles, { colors, fonts, spacing } from './globalStyles';
+import GlobalStyles, { colors, fonts, spacing, borderRadius } from './globalStyles';
 
 const { width } = Dimensions.get('window');
 const imageSize = width * 0.8;
@@ -24,8 +24,12 @@ export default function CaptureImageScreen() {
   const [logoUrl, setLogoUrl] = useState('');
   const [logoPlacement, setLogoPlacement] = useState('');
   const [loading, setLoading] = useState(true);
+  const [disableCapture, setDisableCapture] = useState(false);
   const router = useRouter();
   const { eventID } = useLocalSearchParams();
+
+  const [countdown, setCountdown] = useState(5);
+  const [isCounting, setIsCounting] = useState(false);
 
 
   useEffect(() => {
@@ -69,6 +73,23 @@ export default function CaptureImageScreen() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
   };
 
+  const startCountdown = async () => {
+    setDisableCapture(true);
+    setIsCounting(true);
+    let counter = countdown;
+
+    const timer = setInterval(() => {
+      setCountdown((prevCountdown) => prevCountdown - 1);
+      counter -= 1;
+
+      if (counter === 0) {
+        clearInterval(timer);
+        setIsCounting(false);
+        takePicture();
+      }
+    }, 1000);
+  };
+
   const takePicture = async () => {
     if (cameraRef) {
       const photo = await cameraRef.takePictureAsync({ base64: true });
@@ -76,6 +97,8 @@ export default function CaptureImageScreen() {
       const source = photo.base64;
       let base64Img = `data:image/jpg;base64,${source}`;
       setPhoto(base64Img);
+      setDisableCapture(false);
+      setCountdown(5);
     }
   };
 
@@ -152,22 +175,30 @@ const handleSubmit = async () => {
   return (
     <View style={styles.container}>
       {logoUrl && (
-      <Image 
-        source={{ uri: logoUrl }} 
-        style={{ width: 25, height: 25, alignSelf: 'center', marginTop: 20 }} 
-      />
-    )}
+        <Image 
+          source={{ uri: logoUrl }} 
+          style={{ 
+            width: 64, 
+            height: 64, 
+            position: 'absolute', 
+            top: '16px',
+            left: '50%',
+            transform: [{ translateX: '-50%' }],
+            zIndex: 1, 
+          }} 
+        />
+      )}
       {photoUri ? (
         <View style={styles.preview}>
-          <Text style={fonts.display}>Photo Preview</Text>
+          <Text style={{...fonts.display, fontSize: fonts.size_24}}>Photo Preview</Text>
           <View style={styles.imageContainer}>
             <Image source={{ uri: photoUri }} style={styles.imagePreview} />
           </View>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent'}} onPress={retakePicture}>
-              <Text style={GlobalStyles.buttonText}>Retake</Text>
+          <View style={GlobalStyles.buttonContainer}>
+            <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent', width: 'fit-content'}} onPress={retakePicture}>
+              <Text style={{...GlobalStyles.buttonText, color: colors.lightGray}}>Retake</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[GlobalStyles.button]} onPress={handleContinue}>
+            <TouchableOpacity style={{...GlobalStyles.button, width: '200px'}} onPress={handleContinue}>
               <Text style={GlobalStyles.buttonText}>Continue</Text>
             </TouchableOpacity>
           </View>
@@ -178,11 +209,12 @@ const handleSubmit = async () => {
           facing={facing}
           ref={(ref) => setCameraRef(ref)}
         >
-          <View style={styles.buttonContainer}>
+          <Text style={{...fonts.display, fontSize: '120px'}}>{isCounting && countdown}</Text>
+          <View style={{...GlobalStyles.buttonContainer, marginBottom: spacing.lg}}>
             <TouchableOpacity style={{width: 'fit-content'}} onPress={() => router.back()}>
               <FontAwesome name="arrow-left" size={24} color={colors.text} />
             </TouchableOpacity>
-            <TouchableOpacity style={{...GlobalStyles.button, width: '50%'}} onPress={takePicture}>
+            <TouchableOpacity disabled={disableCapture} style={{...GlobalStyles.button, width: '200px', backgroundColor: disableCapture ? colors.gray[100] : colors.primary}} onPress={startCountdown}>
               <Text style={GlobalStyles.buttonText}>Take Picture</Text>
             </TouchableOpacity>
             <TouchableOpacity style={{width: 'fit-content'}} onPress={toggleCameraFacing}>
@@ -203,8 +235,9 @@ const handleSubmit = async () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
-          <Text style={fonts.display}>Share Your Photos</Text>
-          <Text style={styles.modalSubText}>How would you like to receive your photos?</Text>
+            <Text style={{...fonts.display, fontSize: fonts.size_24}}>Share Your Photos</Text>
+            <Text style={styles.modalSubText}>How would you like to receive your photos?</Text>
+
             <TextInput
               style={GlobalStyles.textInput}
               placeholder="Phone Number"
@@ -213,7 +246,9 @@ const handleSubmit = async () => {
               value={phoneNumber}
               onChangeText={setPhoneNumber}
             />
+            
             <Text style={styles.modalSubText}>OR</Text>
+
             <TextInput
               style={GlobalStyles.textInput}
               placeholder="Email"
@@ -222,11 +257,19 @@ const handleSubmit = async () => {
               value={email}
               onChangeText={setEmail}
             />
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent'}} onPress={() => setModalVisible(false)}>
+
+            <View style={GlobalStyles.buttonContainer}>
+              <TouchableOpacity 
+                style={{
+                  ...GlobalStyles.button, 
+                  backgroundColor: 'transparent', 
+                  width: 'fit-content'
+                }}
+                onPress={() => setModalVisible(false)}
+              >
                 <Text style={GlobalStyles.buttonText}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={GlobalStyles.button} onPress={handleSubmit}>
+              <TouchableOpacity style={{...GlobalStyles.button, width: '200px'}} onPress={handleSubmit}>
                 <Text style={GlobalStyles.buttonText}>Submit</Text>
               </TouchableOpacity>
             </View>
@@ -248,13 +291,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
-  buttonContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
   preview: {
     flex: 1,
     justifyContent: 'space-around',
@@ -267,7 +303,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
-    borderRadius: 10,
+    borderRadius: borderRadius.xxl,
   },
   imagePreview: {
     width: '100%',
@@ -288,7 +324,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalSubText: {
-    color: '#AAA',
+    color: colors.lightGray,
     fontSize: 16,
     textAlign: 'center',
     marginBottom: spacing.md,

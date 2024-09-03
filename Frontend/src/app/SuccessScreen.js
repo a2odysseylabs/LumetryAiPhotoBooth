@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import GlobalStyles, { colors, fonts, spacing } from './globalStyles';
 
 export default function SuccessScreen() {
@@ -16,27 +17,26 @@ export default function SuccessScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Lumetry logo here */}
-      <Text style={styles.logoText}>Custom Logo</Text>
-
-      {/* Success Icon */}
       <View style={styles.successIconContainer}>
-        {/* <Image 
-          source={require('./path/to/success-icon.png')}
-          style={styles.successIcon}
-        /> */}
+        <FontAwesome name="check" size={64} color={colors.text} />
       </View>
 
-      <Text style={styles.title}>Success!</Text>
-      <Text style={styles.message}>
+      <Text style={{...fonts.display, fontSize: fonts.size_32}}>Success!</Text>
+      <Text style={{...fonts.display, fontSize: fonts.size_24}}>
         Your photos are on the way
       </Text>
-      <Text style={styles.subMessage}>
-        Thank you for using AiBooth! Your AI-generated photos are being delivered to you. We hope you enjoy your unique and magical memories!
-      </Text>
 
-      <TouchableOpacity style={styles.doneButton} onPress={handleDone}>
-        <Text style={styles.doneButtonText}>Done</Text>
+      <view style={{marginTop: spacing.lg, marginBottom: spacing.lg}}>
+        <Text style={styles.subMessage}>
+          Thank you for using AiBooth!
+        </Text>
+        <Text style={styles.subMessage}>
+          Your AI-generated photos are being delivered to you. We hope you enjoy your unique and magical memories!
+        </Text>
+      </view>
+
+      <TouchableOpacity style={{...GlobalStyles.button, width: '200px'}} onPress={handleDone}>
+        <Text style={GlobalStyles.buttonText}>Done</Text>
       </TouchableOpacity>
     </View>
   );
@@ -78,19 +78,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   subMessage: {
-    color: '#AAA',
+    display: 'block',
+    color: colors.lightGray,
     fontSize: 16,
     textAlign: 'center',
-    marginBottom: spacing.xl,
-  },
-  doneButton: {
-    backgroundColor: '#800000',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xl,
-  },
-  doneButtonText: {
-    color: '#FFF',
-    fontSize: 18,
-    fontFamily: fonts.bold,
   },
 });
