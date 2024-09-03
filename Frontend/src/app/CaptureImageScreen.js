@@ -139,6 +139,7 @@ const handleSubmit = async () => {
   }
 
   try {
+    setLoading(true);
     // Upload the image to Cloudinary
     const secureUrl = await uploadImageToCloudinary(photoUri);
     setSecureUrl(secureUrl);
@@ -153,7 +154,6 @@ const handleSubmit = async () => {
 
     // Send the photo data to the backend
     const response = await axios.post(`${SERVER_LINK}/add-photo`, photoData);
-    // console.log(response);
     
     if (response.data.status === 'ok') {
       Alert.alert('Success', 'Photo added to event gallery successfully.');
@@ -169,6 +169,9 @@ const handleSubmit = async () => {
   } catch (error) {
     console.error('Error submitting details:', error);
     Alert.alert('Error', 'Failed to submit details');
+  }
+  finally {
+    setLoading(false);
   }
 };
 
