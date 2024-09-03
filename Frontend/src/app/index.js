@@ -5,6 +5,7 @@ import axios from 'axios';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import * as Font from 'expo-font';
 import { SERVER_LINK } from '@env';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 import GlobalStyles, { colors, fonts, spacing } from './globalStyles';
 
@@ -12,6 +13,7 @@ function LoginPage() {
     const router = useRouter(); // Use useRouter from expo-router instead of useNavigation
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         async function loadFonts() {
@@ -29,11 +31,13 @@ function LoginPage() {
             username: username,
             password: password,
         };
+        setLoading(true);
         axios.post(`${SERVER_LINK}/login-user`, userData)
             .then(res => {
                 if (res.data.status === 'ok') {
                     router.push('/events'); // Navigate using the router from expo-router
                 }
+                setLoading(false);
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -59,8 +63,8 @@ function LoginPage() {
                 secureTextEntry
                 placeholderTextColor={colors.lightGray}
             />
-            <TouchableOpacity style={GlobalStyles.button} onPress={handleLogin}>
-                <Text style={GlobalStyles.buttonText}>Login</Text>
+            <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: loading ? colors.gray[100] : colors.primary}} onPress={handleLogin}>
+                <Text style={GlobalStyles.buttonText}>{!loading ? 'Login' : '...loading'}</Text>
             </TouchableOpacity>
         </View>
     );
