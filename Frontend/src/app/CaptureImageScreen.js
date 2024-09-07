@@ -180,13 +180,15 @@ const handleSubmit = async () => {
       {photoUri ? (
         <View style={styles.preview}>
           <View style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <Image 
+            {logoUrl ? (
+              <Image 
                 source={{ uri: logoUrl }} 
                 style={{ 
                   width: 64, 
                   height: 64, 
                 }} 
-                />
+              />
+            ) : null}
             <Text style={{...fonts.display, fontSize: fonts.size_24}}>Photo Preview</Text>
           </View>
           <View style={styles.imageContainer}>
