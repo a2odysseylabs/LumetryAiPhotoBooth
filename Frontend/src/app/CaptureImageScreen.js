@@ -12,7 +12,7 @@ const imageSize = width * 0.8;
 
 
 export default function CaptureImageScreen() {
-  const [facing, setFacing] = useState('back');
+  const [facing, setFacing] = useState('front');
   const [permission, requestPermission] = useCameraPermissions();
   const [photoUri, setPhotoUri] = useState(null);
   const [photo, setPhoto] = useState(null);
@@ -70,7 +70,7 @@ export default function CaptureImageScreen() {
   }
 
   const toggleCameraFacing = () => {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
+    setFacing(current => (current === 'front' ? 'back' : 'front'));
   };
 
   const startCountdown = async () => {
