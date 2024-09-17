@@ -160,20 +160,32 @@ export default function CreateEvents() {
     <View style={styles.container}>
       <StatusBar style="light" />
 
-      {logoUrl && (
-        <Image 
-        source={{ uri: logoUrl }} 
-        style={{ 
-          width: 50, 
-          height: 50, 
-          borderRadius: 10, 
-          marginBottom: 24, 
-          marginRight: 'auto', 
-          marginLeft: 'auto', 
-        }} />
-      )}
-      <Text style={styles.logo}>{eventNameInput}</Text>
-        
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent', width: 'initial'}} onPress={() => router.back()}>
+          <Text style={GlobalStyles.buttonText}>Back</Text>
+        </TouchableOpacity>
+
+        <View>
+          {logoUrl && (
+            <Image 
+            source={{ uri: logoUrl }} 
+            style={{ 
+              width: 50, 
+              height: 50, 
+              borderRadius: 10, 
+              marginBottom: 24, 
+              marginRight: 'auto', 
+              marginLeft: 'auto', 
+            }} 
+            />
+          )}
+          <Text style={styles.logo}>{eventNameInput}</Text>
+        </View>
+
+        <TouchableOpacity style={{...GlobalStyles.button, width: 'initial'}} onPress={handleSave}>
+          <Text style={GlobalStyles.buttonText}>Save</Text>
+        </TouchableOpacity>
+      </View>
 
       <Text style={fonts.inputLabelText}>Event name</Text>
       <TextInput
@@ -210,7 +222,7 @@ export default function CreateEvents() {
         value={promptTitle}
       />
 
-      <Text style={fonts.inputLabelText}>AI generative propmy</Text>
+      <Text style={fonts.inputLabelText}>AI generative prompt</Text>
       <TextInput
         style={GlobalStyles.textInput}
         placeholder="Prompt"
@@ -236,27 +248,31 @@ export default function CreateEvents() {
         <Picker
           selectedValue={logoPlacement}
           onValueChange={(itemValue) => setLogoPlacement(itemValue)}
-          style={{ ...GlobalStyles.textInput, marginBottom: spacing.md, width: '48%' }}
+          style={{
+            ...GlobalStyles.textInput, 
+            marginBottom: spacing.md, 
+            width: '48%', 
+          }}
         >
-          <Picker.Item label="Disable" value="" />
-          <Picker.Item label="Bottom Left" value="BL" />
-          <Picker.Item label="Bottom Right" value="BR" />
+          <Picker.Item color={colors.text} label="Disable" value="" />
+          <Picker.Item color={colors.text} label="Bottom Left" value="BL" />
+          <Picker.Item color={colors.text} label="Bottom Right" value="BR" />
         </Picker>
       </View>
 
 
       <View style={styles.buttonContainer}>
-          <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent', width: '48%'}} onPress={() => router.back()}>
-            <Text style={GlobalStyles.buttonText}>Back</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={{...GlobalStyles.button, width: '48%'}} onPress={handleSave}>
-            <Text style={GlobalStyles.buttonText}>Save</Text>
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity style={{...GlobalStyles.button, marginBottom: spacing.md}} onPress={handleStartEvent}>
-          <Text style={GlobalStyles.buttonText}>Start Event</Text>
+        <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent', width: '48%'}} onPress={() => router.back()}>
+          <Text style={GlobalStyles.buttonText}>Back</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={{...GlobalStyles.button, width: '48%'}} onPress={handleSave}>
+          <Text style={GlobalStyles.buttonText}>Save</Text>
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity style={{...GlobalStyles.button, marginBottom: spacing.md}} onPress={handleStartEvent}>
+        <Text style={GlobalStyles.buttonText}>Start Event</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity style={GlobalStyles.buttonSecondary} onPress={handleViewGallery}>
         <Text style={GlobalStyles.buttonText}>View Gallery</Text>

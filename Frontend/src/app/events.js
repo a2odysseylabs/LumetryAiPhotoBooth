@@ -9,6 +9,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { SERVER_LINK } from '@env';
 
+import Logo from '../../assets/lumetry.svg';
 import GlobalStyles, { borderRadius, colors, fonts, spacing } from './globalStyles';
 
 export default function EventsDisplay() {
@@ -158,7 +159,7 @@ export default function EventsDisplay() {
     <View style={styles.container}>
       <StatusBar style="light" />
 
-      <Image source={require('../../assets/lumetry.svg')} style={{}} />
+      <Logo width={300} height={80} style={{marginTop: spacing.lg}} />
       <Text style={{...fonts.wide, color: colors.lightGray, textAlign: "center", marginBottom: spacing.xl}}>AI Photo Booth</Text>
 
       <Text 

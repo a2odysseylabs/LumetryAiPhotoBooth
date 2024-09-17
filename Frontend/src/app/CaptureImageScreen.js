@@ -156,7 +156,7 @@ const handleSubmit = async () => {
     const response = await axios.post(`${SERVER_LINK}/add-photo`, photoData);
     
     if (response.data.status === 'ok') {
-      Alert.alert('Success', 'Photo added to event gallery successfully.');
+      // Alert.alert('Success', 'Photo added to event gallery successfully.');
       router.replace({
         pathname: '/SuccessScreen',
         params: { eventID: eventID },
@@ -208,23 +208,39 @@ const handleSubmit = async () => {
           style={styles.camera}
           facing={facing}
           ref={(ref) => setCameraRef(ref)}
+          className="camera-view"
         >
           {logoUrl && (
-            <Image 
-              source={{ uri: logoUrl }} 
-              style={{ 
-                width: 64, 
-                height: 64, 
-                position: 'absolute', 
-                top: '16px',
-                left: '50%',
-                transform: [{ translateX: '-50%' }],
-                zIndex: 1, 
-              }} 
-            />
+            <View 
+              style={{
+                ...GlobalStyles.buttonContainer, 
+                padding: spacing.lg,
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                width: '100%',
+              }}
+            >
+              <Image 
+                source={{ uri: logoUrl }} 
+                style={{ 
+                  width: 64, 
+                  height: 64,
+                  zIndex: 1, 
+                  margin: 'auto',
+                }} 
+              />
+            </View>
           )}
-          <Text style={{...fonts.display, fontSize: '120px'}}>{isCounting && countdown}</Text>
-          <View style={{...GlobalStyles.buttonContainer, marginBottom: spacing.lg}}>
+
+          <Text style={{...fonts.display, fontSize: '240px'}}>{isCounting && countdown}</Text>
+
+          <View 
+            style={{
+              ...GlobalStyles.buttonContainer, 
+              padding: spacing.lg,
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              width: '100%',
+            }}
+          >
             <TouchableOpacity style={{width: 'fit-content'}} onPress={() => router.back()}>
               <FontAwesome name="arrow-left" size={24} color={colors.text} />
             </TouchableOpacity>
@@ -249,10 +265,10 @@ const handleSubmit = async () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
-            <Text style={{...fonts.display, fontSize: fonts.size_24}}>Share Your Photos</Text>
-            <Text style={styles.modalSubText}>How would you like to receive your photos?</Text>
+            <Text style={{...fonts.display, fontSize: fonts.size_24, marginBottom: spacing.lg}}>Share Your Photos</Text>
+            {/* <Text style={styles.modalSubText}>How would you like to receive your photos?</Text> */}
 
-            <TextInput
+            {/* <TextInput
               style={GlobalStyles.textInput}
               placeholder="Phone Number"
               placeholderTextColor="#999"
@@ -261,10 +277,10 @@ const handleSubmit = async () => {
               onChangeText={setPhoneNumber}
             />
             
-            <Text style={styles.modalSubText}>OR</Text>
+            <Text style={styles.modalSubText}>OR</Text> */}
 
             <TextInput
-              style={GlobalStyles.textInput}
+              style={{...GlobalStyles.textInput, marginBottom: spacing.lg}}
               placeholder="Email"
               placeholderTextColor="#999"
               keyboardType="email-address"
@@ -302,7 +318,7 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   preview: {
