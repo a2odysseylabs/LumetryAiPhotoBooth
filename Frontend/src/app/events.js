@@ -178,14 +178,14 @@ export default function EventsDisplay() {
         marginBottom: spacing.md,
       }}>
         <TextInput
-          style={{ ...GlobalStyles.textInput, width: 'initial', flexGrow: 1, marginBottom: 0 }}
+          style={{ ...GlobalStyles.textInput, width: "60%", marginBottom: 0 }}
           placeholder="Search Events"
           placeholderTextColor={colors.lightGray}
           onChangeText={text => setSearchQuery(text)}
           value={searchQuery}
         />
         <TouchableOpacity 
-          style={{ ...GlobalStyles.button, width: 'fit-content', }}
+          style={{ ...GlobalStyles.button, width: '40%', }}
           onPress={toggleModal}
         >
           <Text style={GlobalStyles.buttonText}>Add Event</Text>

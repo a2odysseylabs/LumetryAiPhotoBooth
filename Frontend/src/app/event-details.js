@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, Alert, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, Alert, ActivityIndicator, ScrollView, Dimensions} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import DateTimePicker from 'react-native-ui-datepicker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -22,7 +22,6 @@ export default function CreateEvents() {
   const [loading, setLoading] = useState(true);
   const [logoUrl, setLogoUrl] = useState('');
   const [logoPlacement, setLogoPlacement] = useState('');
-
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -52,6 +51,8 @@ export default function CreateEvents() {
     fetchEvents();
   }, [eventID]);
 
+  const isMobile = Dimensions.get('window').width < 600
+
   const uploadImageToCloudinary = async (photoUri) => {
     const data = new FormData();
     data.append('file', photoUri);
@@ -73,7 +74,6 @@ export default function CreateEvents() {
       throw new Error('Failed to upload image');
     }
   };
-  
 
   const handleSave = async () => {
     try {
@@ -132,7 +132,6 @@ export default function CreateEvents() {
     }    
   };
   
-
   const handleStartEvent = () => {
     router.push({
       pathname: '/CaptureImageScreen',
@@ -155,32 +154,32 @@ export default function CreateEvents() {
     );
   }
 
+  console.log('logoUrl:', logoUrl);
+
   return (
     <ScrollView>
     <View style={styles.container}>
       <StatusBar style="light" />
 
+      {logoUrl && (
+        <Image 
+          source={{ uri: logoUrl }} 
+          style={{ 
+            width: 100, 
+            height: 64, 
+            borderRadius: 10, 
+            marginRight: 'auto', 
+            marginLeft: 'auto', 
+            resizeMode: 'contain',
+          }} 
+        />
+      )}
+      <Text style={styles.logo}>{eventNameInput}</Text>
+
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent', width: 'initial'}} onPress={() => router.back()}>
           <Text style={GlobalStyles.buttonText}>Back</Text>
         </TouchableOpacity>
-
-        <View>
-          {logoUrl && (
-            <Image 
-            source={{ uri: logoUrl }} 
-            style={{ 
-              width: 50, 
-              height: 50, 
-              borderRadius: 10, 
-              marginBottom: 24, 
-              marginRight: 'auto', 
-              marginLeft: 'auto', 
-            }} 
-            />
-          )}
-          <Text style={styles.logo}>{eventNameInput}</Text>
-        </View>
 
         <TouchableOpacity style={{...GlobalStyles.button, width: 'initial'}} onPress={handleSave}>
           <Text style={GlobalStyles.buttonText}>Save</Text>
@@ -241,8 +240,15 @@ export default function CreateEvents() {
       />
 
       <Text style={fonts.inputLabelText}>Select event logo & placement</Text>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={{ ...GlobalStyles.buttonSecondary, marginBottom: spacing.md, width: '48%' }} onPress={pickImage}>
+      <View style={!isMobile && styles.buttonContainer}>
+        <TouchableOpacity 
+          style={{ 
+            ...GlobalStyles.buttonSecondary, 
+            marginBottom: spacing.md, 
+            width: isMobile ? '100%' : '48%' 
+          }} 
+          onPress={pickImage}
+        >
           <Text style={GlobalStyles.buttonText}>Upload logo</Text>
         </TouchableOpacity>
         <Picker
@@ -251,7 +257,7 @@ export default function CreateEvents() {
           style={{
             ...GlobalStyles.textInput, 
             marginBottom: spacing.md, 
-            width: '48%', 
+            width: isMobile ? '100%' : '48%'  
           }}
         >
           <Picker.Item color={colors.text} label="Disable" value="" />

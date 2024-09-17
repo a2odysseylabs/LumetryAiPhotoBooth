@@ -222,10 +222,11 @@ const handleSubmit = async () => {
               <Image 
                 source={{ uri: logoUrl }} 
                 style={{ 
-                  width: 64, 
+                  width: 100, 
                   height: 64,
                   zIndex: 1, 
                   margin: 'auto',
+                  resizeMode: 'contain',
                 }} 
               />
             </View>
@@ -293,14 +294,21 @@ const handleSubmit = async () => {
                 style={{
                   ...GlobalStyles.button, 
                   backgroundColor: 'transparent', 
-                  width: 'fit-content'
+                  width: '50%'
                 }}
                 onPress={() => setModalVisible(false)}
               >
                 <Text style={GlobalStyles.buttonText}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={{...GlobalStyles.button, width: '200px'}} onPress={handleSubmit}>
-                <Text style={GlobalStyles.buttonText}>Submit</Text>
+              <TouchableOpacity 
+                disabled={loading} 
+                style={{
+                  ...GlobalStyles.button, width: '50%',
+                  backgroundColor: loading ? colors.gray[100] : colors.primary
+                }} 
+                onPress={handleSubmit}
+              >
+                <Text style={GlobalStyles.buttonText}>{loading ? 'Sending' : 'Submit'}</Text>
               </TouchableOpacity>
             </View>
           </View>
