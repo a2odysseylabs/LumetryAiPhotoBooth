@@ -7,6 +7,7 @@ import * as Font from 'expo-font';
 import { SERVER_LINK } from '@env';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
+import Logo from '../../assets/lumetry.svg';
 import GlobalStyles, { colors, fonts, spacing } from './globalStyles';
 
 function LoginPage() {
@@ -47,6 +48,7 @@ function LoginPage() {
     return (
         <View style={styles.container}>
             <Image source={require('../../assets/lumetry.svg')} style={{}} />
+            <Logo width={300} height={80} />
             <Text style={{...fonts.wide, color: colors.lightGray, textAlign: "center", marginBottom: spacing.xl}}>AI Photo Booth</Text>
             <TextInput
                 style={GlobalStyles.textInput}
@@ -64,7 +66,7 @@ function LoginPage() {
                 placeholderTextColor={colors.lightGray}
             />
             <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: loading ? colors.gray[100] : colors.primary}} onPress={handleLogin}>
-                <Text style={GlobalStyles.buttonText}>{!loading ? 'Login' : '...loading'}</Text>
+                <Text style={GlobalStyles.buttonText}>{!loading ? 'Login' : '...Starting server'}</Text>
             </TouchableOpacity>
         </View>
     );

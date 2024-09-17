@@ -25,15 +25,9 @@ export default function SuccessScreen() {
       <Text style={{...fonts.display, fontSize: fonts.size_24}}>
         Your photos are on the way
       </Text>
-
-      <View style={{marginTop: spacing.lg, marginBottom: spacing.lg}}>
-        <Text style={styles.subMessage}>
-          Thank you for using AiBooth!
-        </Text>
-        <Text style={styles.subMessage}>
-          Your AI-generated photos are being delivered to you. We hope you enjoy your unique and magical memories!
-        </Text>
-      </View>
+      <Text style={{...styles.subMessage, marginBottom: spacing.xl, marginTop: spacing.md}}>
+        Thank you for using AiBooth!
+      </Text>
 
       <TouchableOpacity style={{...GlobalStyles.button, width: '200px'}} onPress={handleDone}>
         <Text style={GlobalStyles.buttonText}>Done</Text>
