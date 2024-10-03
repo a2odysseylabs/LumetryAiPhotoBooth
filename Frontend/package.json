@@ -21,6 +21,7 @@
     "expo-constants": "~16.0.2",
     "expo-image-picker": "~15.0.7",
     "expo-linking": "~6.3.1",
+    "expo-modules-core": "^1.12.24",
     "expo-router": "~3.5.20",
     "expo-status-bar": "~1.12.1",
     "react": "18.2.0",
