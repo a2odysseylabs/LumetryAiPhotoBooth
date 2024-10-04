@@ -81,3 +81,12 @@ Follow these steps to set up the React Native Expo app:
    - Note: You can use any username and password combination you prefer. The app only includes a signin page, not a registration page, as end users won't have access to it. To update credentials in the future, modify them directly in the database.
 
 6. Update the `SERVER_LINK` in the Frontend `.env` file with the Render deployment URL.
+
+### Xcode Setup
+
+1. from Frontend/ios run open aibooth.xcworkspace
+2. make sure correct apple dev account is selected in Signing & Capabilities settings
+3. plug in devices and select it as the target
+4. click the run button to install on device
+5. first time install the developer needs to be trusted on device. you will see a notification to trust. go to settings > general > VPN & Device Management select developer and click trust.
+6. should be able to just open the app after trusting developer
