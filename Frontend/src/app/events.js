@@ -11,6 +11,7 @@ import { SERVER_LINK } from '@env';
 
 import Logo from '../../assets/lumetry.svg';
 import GlobalStyles, { borderRadius, colors, fonts, spacing } from './globalStyles';
+import GradientButton from './components/GradientButton';
 
 export default function EventsDisplay() {
   const router = useRouter();
@@ -184,12 +185,12 @@ export default function EventsDisplay() {
           onChangeText={text => setSearchQuery(text)}
           value={searchQuery}
         />
-        <TouchableOpacity 
-          style={{ ...GlobalStyles.button, width: '40%', }}
+        <GradientButton 
+          style={{ width: '40%', }}
           onPress={toggleModal}
         >
           <Text style={GlobalStyles.buttonText}>Add Event</Text>
-        </TouchableOpacity>
+        </GradientButton>
       </View>
 
       <ScrollView contentContainerStyle={{}}>
@@ -268,9 +269,9 @@ export default function EventsDisplay() {
             <TouchableOpacity style={{...GlobalStyles.button, width: '48%', backgroundColor: 'transparent'}} onPress={toggleModal}>
               <Text style={GlobalStyles.buttonText}>Back</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={{...GlobalStyles.button, width: '48%'}} onPress={handleSaveNewEvent}>
+            <GradientButton style={{ width: '48%'}} onPress={handleSaveNewEvent}>
               <Text style={GlobalStyles.buttonText}>Save</Text>
-            </TouchableOpacity>
+            </GradientButton>
           </View>
 
         </View>
@@ -296,11 +297,5 @@ const styles = StyleSheet.create({
     width: '31.97%',
     paddingTop: spacing.lg,
     paddingBottom: spacing.lg,
-  },
-  // addNewEventText: {
-  //   color: colors.text,
-  //   fontSize: fonts.size_18,
-  //   fontFamily: fonts.bold,
-  //   textAlign: 'center',
-  // },
+  }
 });
