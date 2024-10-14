@@ -21,6 +21,7 @@ export default function EventsDisplay() {
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setModalVisible] = useState(false);
   const [newEventName, setNewEventName] = useState('');
+  const [promptsList, setPromptsList] = useState([]);
   const [newEventDate, setNewEventDate] = useState(new Date());
   const [newPrompt, setNewPrompt] = useState('');
   const [newPromptTitle, setNewPromptTitle] = useState('');
@@ -55,13 +56,17 @@ export default function EventsDisplay() {
       return;
     }
 
+    const updatedPromptsList = [...promptsList, newPrompt];
+    console.log(updatedPromptsList);
+
     try {
       const response = await axios.post(`${SERVER_LINK}/create-event`, {
         eventName: newEventName,
         eventDate: newEventDate.toISOString(),
         promptTitle: newPromptTitle,
         prompt: newPrompt,
-        negativePrompt: newNegativePrompt
+        negativePrompt: newNegativePrompt,
+        promptsList: updatedPromptsList
       });
 
       console.log(response);

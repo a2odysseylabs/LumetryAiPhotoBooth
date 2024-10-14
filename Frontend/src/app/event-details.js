@@ -257,7 +257,7 @@ export default function CreateEvents() {
       <Text style={fonts.sectionHeading}>Generative Prompts</Text>
 
       {/* AI generative prompt */}
-      <PromptManager currentPrompt={prompt} SetCurrentPrompt={setPrompt} />
+      <PromptManager currentPrompt={prompt} setCurrentPrompt={setPrompt} promptList={promptsList} setPromptList={setPromptsList} />
 
       {/* Negative prompt */}
       <Text style={fonts.inputLabelText}>Negative prompt</Text>

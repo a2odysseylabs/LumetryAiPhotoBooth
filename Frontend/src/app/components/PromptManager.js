@@ -9,34 +9,35 @@ import {
 import GlobalStyles, { colors, spacing, fonts, divider, borderRadius } from "../globalStyles";
 import GradientButton from "./GradientButton";
 
-const PromptManager = ({ currentPrompt, setCurrentPrompt }) => {
+const PromptManager = ({ currentPrompt, setCurrentPrompt, promptList, setPromptList }) => {
     const [prompts, setPrompts] = useState([]);
     const [promptSelectionOpen, setPromptSelectionOpen] = useState(false);
     const [isEditingPrompt, setIsEditingPrompt] = useState(false);
     const [newPrompt, setNewPrompt] = useState("");
 
-    // Initialize prompts with the existing prompt when the component mounts
+    // Initialize prompts from the promptList when the component mounts
     useEffect(() => {
-        if (currentPrompt) {
-            const initialPrompt = { text: currentPrompt, id: Date.now() };
-            setPrompts([initialPrompt]);
+        if (promptList && promptList.length > 0) {
+            setPrompts(promptList.map((text, index) => ({ text, id: index })));
         }
-    }, [currentPrompt]);
+    }, [promptList]);
 
-    // Function to add a new prompt to the list
+    // Function to add a new prompt to the list and update promptList
     const addNewPrompt = () => {
         if (newPrompt.trim()) {
             const newPromptObj = { text: newPrompt, id: Date.now() };
-            setPrompts([...prompts, newPromptObj]);
+            const updatedPrompts = [...prompts, newPromptObj];
+            setPrompts(updatedPrompts);
+            setPromptList(updatedPrompts.map(p => p.text)); // Update the external promptList
             setNewPrompt("");
         }
     };
 
-    // Function to update a specific prompt in the list without setting it as active
+    // Function to update a specific prompt in the list and reflect it in promptList
     const savePrompt = (id, newText) => {
-        setPrompts(
-            prompts.map((p) => (p.id === id ? { ...p, text: newText } : p))
-        );
+        const updatedPrompts = prompts.map((p) => (p.id === id ? { ...p, text: newText } : p));
+        setPrompts(updatedPrompts);
+        setPromptList(updatedPrompts.map(p => p.text)); // Update the external promptList
     };
 
     // Function to set the active prompt
@@ -76,7 +77,14 @@ const PromptManager = ({ currentPrompt, setCurrentPrompt }) => {
                         }}
                         placeholder="Select a prompt"
                         placeholderTextColor={colors.lightGray}
-                        onChangeText={setCurrentPrompt}
+                        onChangeText={(text) => {
+                            setCurrentPrompt(text);
+                            // Update the corresponding prompt in the list
+                            const currentPromptObj = prompts.find(p => p.text === currentPrompt);
+                            if (currentPromptObj) {
+                                savePrompt(currentPromptObj.id, text); // Save the updated prompt
+                            }
+                        }}
                         value={currentPrompt}
                         editable={isEditingPrompt}
                     />
@@ -169,7 +177,8 @@ const PromptManager = ({ currentPrompt, setCurrentPrompt }) => {
                                     Active
                                 </Text>
                             </TouchableOpacity>
-                            <GradientButton
+                            {/* We are already updating savePrompt while onChange */}
+                            {/* <GradientButton
                                 style={{
                                     width: "auto",
                                 }}
@@ -179,7 +188,7 @@ const PromptManager = ({ currentPrompt, setCurrentPrompt }) => {
                                 <Text style={GlobalStyles.buttonText}>
                                     Save
                                 </Text>
-                            </GradientButton>
+                            </GradientButton> */}
                         </View>
                     ))}
                 </View>

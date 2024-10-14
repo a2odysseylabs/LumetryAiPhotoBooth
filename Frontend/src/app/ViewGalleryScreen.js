@@ -28,6 +28,7 @@ export default function ViewGalleryScreen() {
 
         if (event && Array.isArray(event.event_gallery)) {
           setEventGallery(event.event_gallery);
+          console.log(event.event_gallery);
         } else {
           Alert.alert('Error', 'No gallery found for this event.');
         }
@@ -57,6 +58,7 @@ export default function ViewGalleryScreen() {
 
   const openImageModal = (image) => {
     setSelectedImage(image);
+    setEmail(image.email); // Set the email for the selected image
     setModalVisible(true);
   };
 
@@ -121,39 +123,47 @@ export default function ViewGalleryScreen() {
 
       {/* Modal for viewing larger image */}
       {selectedImage && (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={closeModal}
-        >
-          <View style={styles.modalContainer}>
-            <View style={{...styles.modalContent, width: isMobile ? '90%' : '60%'}}>
-              <Image
-                source={{ uri: selectedImage.imageUrl }}
-                style={{
-                  width: 200,
-                  height: 300,
-                  borderRadius: borderRadius.md,
-                  marginBottom: spacing.md
-                }}
-              />
-              <EmailInput email={email} setEmail={setEmail} />
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity style={{...GlobalStyles.buttonSecondaryLight, width: 'auto'}} onPress={closeModal}>
-                  <Text style={GlobalStyles.buttonText}>Back</Text>
-                </TouchableOpacity>
-                <GradientButton style={{width: 'auto'}} size="small" onPress={() => {
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={{ ...styles.modalContent, width: isMobile ? '90%' : '60%' }}>
+            <Image
+              source={{ uri: selectedImage.imageUrl }}
+              style={{
+                width: 200,
+                height: 300,
+                borderRadius: borderRadius.md,
+                marginBottom: spacing.md,
+              }}
+            />
+            {/* EmailInput that shows and updates the email */}
+            <EmailInput email={email} setEmail={setEmail} />
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={{ ...GlobalStyles.buttonSecondaryLight, width: 'auto' }}
+                onPress={closeModal}
+              >
+                <Text style={GlobalStyles.buttonText}>Back</Text>
+              </TouchableOpacity>
+              <GradientButton
+                style={{ width: 'auto' }}
+                size="small"
+                onPress={() => {
                   // Logic for email input can be added here
                   closeModal();
-                }}>
-                  <Text style={GlobalStyles.buttonText}>Send</Text>
-                </GradientButton>
-              </View>
+                }}
+              >
+                <Text style={GlobalStyles.buttonText}>Send</Text>
+              </GradientButton>
             </View>
           </View>
-        </Modal>
-      )}
+        </View>
+      </Modal>
+    )}
     </View>
   );
 }
