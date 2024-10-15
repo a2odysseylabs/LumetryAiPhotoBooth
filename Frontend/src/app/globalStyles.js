@@ -3,6 +3,8 @@ import { StyleSheet } from 'react-native';
 
 export const colors = {
     primary: '#870000',
+    primaryLight100: '#931a1a',
+    primaryLight200: '#9f3333',
     gray: {
         400: '#111111',
         300: '#161616',
@@ -48,6 +50,13 @@ export const fonts = {
         marginLeft: 11,
         color: colors.lightGray,
         marginBottom: spacing.sm,
+    },
+    sectionHeading: {
+        fontFamily: 'kanit-bold',
+        letterSpacing: 1,
+        color: colors.gray[100],
+        fontSize: 24,
+        marginBottom: spacing.lg,
     }
 };
 
@@ -57,6 +66,13 @@ export const borderRadius = {
     lg: 16,
     xl: 24,
     xxl: 32,
+};
+
+const baseButton = {
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    alignItems: 'center',
+    width: '100%',
 };
 
 const GlobalStyles = StyleSheet.create({
@@ -84,21 +100,21 @@ const GlobalStyles = StyleSheet.create({
         elevation: 5,
     },
     button: {
+        ...baseButton,
         backgroundColor: colors.primary,
-        padding: spacing.md,
-        borderRadius: borderRadius.md,
-        alignItems: 'center',
-        width: '100%',
     },
     buttonSecondary: {
+        ...baseButton,
         backgroundColor: colors.gray[400],
-        padding: spacing.md,
-        borderRadius: borderRadius.md,
-        alignItems: 'center',
-        width: '100%',
         borderStyle: 'solid',
         borderWidth: 2,
         borderColor: colors.primary,
+    },
+    buttonSecondaryLight: {
+        ...baseButton,
+        borderStyle: 'solid',
+        borderWidth: 2,
+        borderColor: colors.gray[100],
     },
     buttonText: {
         color: colors.text,
@@ -112,6 +128,13 @@ const GlobalStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: spacing.md,
+    },
+    divider: {
+        marginBottom: spacing.xl,
+        paddingBottom: spacing.xl,
+        borderBottomColor: colors.gray[100],
+        borderBottomWidth: 1,
+        borderStyle: 'solid',
     },
 });
 

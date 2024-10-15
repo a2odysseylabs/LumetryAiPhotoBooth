@@ -74,7 +74,7 @@ app.post("/login-user", async (req, res) => {
 
 
 app.post("/create-event", async (req, res) => {
-  const { eventName, eventDate, promptTitle, prompt, negativePrompt } = req.body;
+  const { eventName, eventDate, promptTitle, prompt, negativePrompt, promptsList } = req.body;
 
   const oldEvent = await Event.findOne({ event_name: eventName });
 
@@ -88,7 +88,8 @@ app.post("/create-event", async (req, res) => {
       event_date: eventDate,
       promptTitle: promptTitle,
       prompt: prompt,
-      negative_prompt: negativePrompt
+      negative_prompt: negativePrompt,
+      promptsList: promptsList
     });
     res.send({ status: "ok", data: newEvent });
   } catch (error) {
@@ -110,7 +111,7 @@ app.get("/events", async (req, res) => {
 
 
 app.post("/update-event", async (req, res) => {
-  const { eventID, eventName, eventDate, promptTitle, prompt, negativePrompt, event_logo, logo_placement } = req.body;
+  const { eventID, eventName, eventDate, promptTitle, prompt, negativePrompt, event_logo, logo_placement, promptsList } = req.body;
 
   try {
     const event = await Event.findOneAndUpdate(
@@ -122,7 +123,8 @@ app.post("/update-event", async (req, res) => {
         prompt: prompt,
         negative_prompt: negativePrompt,
         event_logo: event_logo,
-        logo_placement: logo_placement
+        logo_placement: logo_placement,
+        promptsList: promptsList
       },
       { new: true }
     );

@@ -7,7 +7,12 @@ import axios from 'axios';
 import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, SERVER_LINK } from '@env';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
-import GlobalStyles, { borderRadius, colors, fonts, spacing } from './globalStyles';
+import moment from 'moment';
+
+import GlobalStyles, { sectionHeading, colors, fonts, spacing } from './globalStyles';
+import KeyboardAvoidingContainer from './components/keyboardAvoidingContainer';
+import PromptManager from './components/PromptManager';
+import GradientButton from './components/GradientButton';
 
 export default function CreateEvents() {
   const router = useRouter();
@@ -16,12 +21,16 @@ export default function CreateEvents() {
   const [eventid, seteventID] = useState(null);
   const [eventNameInput, setEventNameInput] = useState('');
   const [eventDate, setEventDate] = useState('');
+  const [calOpen, setCalOpen] = useState(false);
   const [promptTitle, setPromptTitle] = useState('');
   const [prompt, setPrompt] = useState('');
+  const [promptsList, setPromptsList] = useState([]);
   const [negativePrompt, setNegativePrompt] = useState('');
   const [loading, setLoading] = useState(true);
   const [logoUrl, setLogoUrl] = useState('');
   const [logoPlacement, setLogoPlacement] = useState('');
+
+  const formattedDate = moment(eventDate).format('MMM Do YYYY');
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -36,6 +45,7 @@ export default function CreateEvents() {
           setEventDate(new Date(event.event_date));
           setPromptTitle(event.promptTitle);
           setPrompt(event.prompt);
+          setPromptsList(event.promptsList || []);
           setNegativePrompt(event.negative_prompt);
           setLogoUrl(event.event_logo);
           setLogoPlacement(event.logo_placement);
@@ -87,6 +97,7 @@ export default function CreateEvents() {
         negativePrompt,
         event_logo: logoUrl,
         logo_placement: logoPlacement,
+        promptsList: promptsList,
       });
 
       if (response.data.status === 'ok') {
@@ -95,6 +106,7 @@ export default function CreateEvents() {
         Alert.alert('Error', response.data.data);
       }
       setLoading(false)
+      setCalOpen(false);
     } catch (error) {
       setLoading(false)
       console.error('Error updating event:', error);
@@ -133,6 +145,7 @@ export default function CreateEvents() {
   };
   
   const handleStartEvent = () => {
+    handleSave();
     router.push({
       pathname: '/CaptureImageScreen',
       params: { eventID: eventid,  event_logo: logoUrl},
@@ -154,11 +167,25 @@ export default function CreateEvents() {
     );
   }
 
-  console.log('logoUrl:', logoUrl);
+  const ButtonControls = (
+    <View style={styles.buttonContainer}>
+      <TouchableOpacity style={{...GlobalStyles.buttonSecondary, padding: spacing.lg, width: 'auto'}} onPress={() => router.back()}>
+        <Text style={GlobalStyles.buttonText}>Back</Text>
+      </TouchableOpacity>
+
+      <View style={{display: 'flex', flexDirection: 'row', gap: spacing.md}}>
+        <GradientButton style={{ width: 'auto'}} onPress={handleSave}>
+          <Text style={GlobalStyles.buttonText}>Save</Text>
+        </GradientButton>
+        <GradientButton style={{width: 'auto'}} onPress={handleStartEvent}>
+          <Text style={GlobalStyles.buttonText}>Start Event</Text>
+        </GradientButton>
+      </View>
+    </View>
+  )
 
   return (
-    <ScrollView>
-    <View style={styles.container}>
+    <KeyboardAvoidingContainer>
       <StatusBar style="light" />
 
       {logoUrl && (
@@ -176,16 +203,13 @@ export default function CreateEvents() {
       )}
       <Text style={styles.logo}>{eventNameInput}</Text>
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent', width: 'initial'}} onPress={() => router.back()}>
-          <Text style={GlobalStyles.buttonText}>Back</Text>
-        </TouchableOpacity>
+      {ButtonControls}
 
-        <TouchableOpacity style={{...GlobalStyles.button, width: 'initial'}} onPress={handleSave}>
-          <Text style={GlobalStyles.buttonText}>Save</Text>
-        </TouchableOpacity>
-      </View>
+      <View style={GlobalStyles.divider} />
 
+      <Text style={fonts.sectionHeading}>Event Details</Text>
+
+      {/* Event Name */}
       <Text style={fonts.inputLabelText}>Event name</Text>
       <TextInput
         style={GlobalStyles.textInput}
@@ -196,23 +220,30 @@ export default function CreateEvents() {
         editable={false}
       />
 
+      {/* Event date */}
       <Text style={fonts.inputLabelText}>Event date</Text>
-      <View style={{...GlobalStyles.textInput, display: 'flex', alignItems: 'start', paddingLeft: 0}}>
-        <DateTimePicker
-          mode="single"
-          date={eventDate}
-          onChange={(params) => setEventDate(params.date)}
-          selectedItemColor={colors.primary}
-          headerButtonColor={colors.lightGray}
-          calendarTextStyle={{color: colors.text}}
-          headerTextStyle={{color: colors.text}}
-          weekDaysTextStyle={{color: colors.text}}
-          todayContainerStyle={{backgroundColor: colors.gray[200]}}
-          todayTextStyle={{color: colors.text}}
-        />
-      </View>
-        
-      <Text style={fonts.inputLabelText}>Event theme</Text>
+      <TouchableOpacity style={GlobalStyles.textInput} onPress={() => setCalOpen(!calOpen)}>
+        <Text style={{color: colors.text, fontSize: fonts.size_18}}>{formattedDate}</Text>
+      </TouchableOpacity>
+      {calOpen && (
+        <View style={{...GlobalStyles.textInput, display: 'flex', alignItems: 'start', paddingLeft: 0}}>
+          <DateTimePicker
+            mode="single"
+            date={eventDate}
+            onChange={(params) => setEventDate(params.date)}
+            selectedItemColor={colors.primary}
+            headerButtonColor={colors.lightGray}
+            calendarTextStyle={{color: colors.text}}
+            headerTextStyle={{color: colors.text}}
+            weekDaysTextStyle={{color: colors.text}}
+            todayContainerStyle={{backgroundColor: colors.gray[200]}}
+            todayTextStyle={{color: colors.text}}
+          />
+        </View>
+      )}
+      
+      {/* Event theme description */}
+      <Text style={fonts.inputLabelText}>Event theme description</Text>
       <TextInput
         style={GlobalStyles.textInput}
         placeholder="Prompt title"
@@ -221,15 +252,14 @@ export default function CreateEvents() {
         value={promptTitle}
       />
 
-      <Text style={fonts.inputLabelText}>AI generative prompt</Text>
-      <TextInput
-        style={GlobalStyles.textInput}
-        placeholder="Prompt"
-        placeholderTextColor={colors.lightGray}
-        onChangeText={setPrompt}
-        value={prompt}
-      />
+      <View style={GlobalStyles.divider} />
 
+      <Text style={fonts.sectionHeading}>Generative Prompts</Text>
+
+      {/* AI generative prompt */}
+      <PromptManager currentPrompt={prompt} setCurrentPrompt={setPrompt} promptList={promptsList} setPromptList={setPromptsList} />
+
+      {/* Negative prompt */}
       <Text style={fonts.inputLabelText}>Negative prompt</Text>
       <TextInput
         style={GlobalStyles.textInput}
@@ -239,11 +269,15 @@ export default function CreateEvents() {
         value={negativePrompt}
       />
 
-      <Text style={fonts.inputLabelText}>Select event logo & placement</Text>
+      <View style={GlobalStyles.divider} />
+
+      {/* Select event logo & placement */}
+      <Text style={fonts.sectionHeading}>Select event logo & placement</Text>
+
       <View style={!isMobile && styles.buttonContainer}>
         <TouchableOpacity 
           style={{ 
-            ...GlobalStyles.buttonSecondary, 
+            ...GlobalStyles.buttonSecondaryLight, 
             marginBottom: spacing.md, 
             width: isMobile ? '100%' : '48%' 
           }} 
@@ -251,7 +285,7 @@ export default function CreateEvents() {
         >
           <Text style={GlobalStyles.buttonText}>Upload logo</Text>
         </TouchableOpacity>
-        <Picker
+        {/* <Picker
           selectedValue={logoPlacement}
           onValueChange={(itemValue) => setLogoPlacement(itemValue)}
           style={{
@@ -263,37 +297,78 @@ export default function CreateEvents() {
           <Picker.Item color={colors.text} label="Disable" value="" />
           <Picker.Item color={colors.text} label="Bottom Left" value="BL" />
           <Picker.Item color={colors.text} label="Bottom Right" value="BR" />
-        </Picker>
+        </Picker> */}
+        <View style={{
+          width: isMobile ? '100%' : '48%',
+          display: 'flex', 
+          flexDirection: 'column',
+          gap: spacing.md
+        }}>
+          {/* top */}
+          <TouchableOpacity 
+            style={logoPlacement === 'TF' ? GlobalStyles.buttonSecondary : GlobalStyles.buttonSecondaryLight} 
+            onPress={() => setLogoPlacement('TF')}
+          >
+            <Text style={GlobalStyles.buttonText}>Top Full</Text>
+          </TouchableOpacity>
+          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+            <TouchableOpacity 
+              style={[logoPlacement === 'TL' ? GlobalStyles.buttonSecondary : GlobalStyles.buttonSecondaryLight, {width: 'auto'}]} 
+              onPress={() => setLogoPlacement('TL')}
+            >
+              <Text style={GlobalStyles.buttonText}>Top Left</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[logoPlacement === 'TR' ? GlobalStyles.buttonSecondary : GlobalStyles.buttonSecondaryLight, {width: 'auto'}]}  
+              onPress={() => setLogoPlacement('TR')}
+            >
+              <Text style={GlobalStyles.buttonText}>Top Right</Text>
+            </TouchableOpacity>
+          </View>
+          {/* Bottom */}
+          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+            <TouchableOpacity 
+              style={[logoPlacement === 'BL' ? GlobalStyles.buttonSecondary : GlobalStyles.buttonSecondaryLight, {width: 'auto'}]} 
+              onPress={() => setLogoPlacement('BL')}
+            >
+              <Text style={GlobalStyles.buttonText}>Bottom Left</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[logoPlacement === 'BR' ? GlobalStyles.buttonSecondary : GlobalStyles.buttonSecondaryLight, {width: 'auto'}]} 
+              onPress={() => setLogoPlacement('BR')}
+            >
+              <Text style={GlobalStyles.buttonText}>Bottom Right</Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity 
+            style={logoPlacement === 'BF' ? GlobalStyles.buttonSecondary : GlobalStyles.buttonSecondaryLight} 
+            onPress={() => setLogoPlacement('BF')}
+          >
+            <Text style={GlobalStyles.buttonText}>Bottom Full</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={{...GlobalStyles.button, backgroundColor: 'transparent'}} 
+            onPress={() => setLogoPlacement('')}
+          >
+            <Text style={GlobalStyles.buttonText}>Disable</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
+      <View style={GlobalStyles.divider} />
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={{...GlobalStyles.button, backgroundColor: 'transparent', width: '48%'}} onPress={() => router.back()}>
-          <Text style={GlobalStyles.buttonText}>Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{...GlobalStyles.button, width: '48%'}} onPress={handleSave}>
-          <Text style={GlobalStyles.buttonText}>Save</Text>
-        </TouchableOpacity>
-      </View>
-
-      <TouchableOpacity style={{...GlobalStyles.button, marginBottom: spacing.md}} onPress={handleStartEvent}>
+      <GradientButton style={{marginBottom: spacing.md}} onPress={handleStartEvent}>
         <Text style={GlobalStyles.buttonText}>Start Event</Text>
-      </TouchableOpacity>
+      </GradientButton>
 
       <TouchableOpacity style={GlobalStyles.buttonSecondary} onPress={handleViewGallery}>
         <Text style={GlobalStyles.buttonText}>View Gallery</Text>
       </TouchableOpacity>
-    </View>
-    </ScrollView>
+    </KeyboardAvoidingContainer>
   );
 }
   
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.gray[300],
-    padding: 20,
-  },
   logo: {
     color: '#FFFFFF',
     fontSize: 24,
@@ -303,10 +378,5 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     ...GlobalStyles.buttonContainer,
-    marginBottom: spacing.xl,
-    paddingBottom: spacing.xl,
-    borderBottomColor: colors.gray[100],
-    borderBottomWidth: 1,
-    borderStyle: 'solid',
   },
 });

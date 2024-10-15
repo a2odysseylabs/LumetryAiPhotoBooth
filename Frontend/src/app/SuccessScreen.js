@@ -9,10 +9,12 @@ export default function SuccessScreen() {
   const { eventID } = useLocalSearchParams();
 
   const handleDone = () => {
-    router.replace({
+    setTimeout(() => {
+      router.replace({
         pathname: '/CaptureImageScreen',
         params: { eventID: eventID },
-      }); 
+      });
+    }, 5000);
   };
 
   return (

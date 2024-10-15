@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Image, Modal, TextInput, Dimensions } from 'react-native';
-import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Image, Modal, Dimensions } from 'react-native';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, SERVER_LINK } from '@env';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import GlobalStyles, { colors, fonts, spacing, borderRadius } from './globalStyles';
+import PulsingButton from './components/PulsingButton';
+import EmailInput from './components/EmailInput';
 
 const { width } = Dimensions.get('window');
 const imageSize = width * 0.8;
-
 
 export default function CaptureImageScreen() {
   const [facing, setFacing] = useState('front');
@@ -28,7 +29,7 @@ export default function CaptureImageScreen() {
   const router = useRouter();
   const { eventID } = useLocalSearchParams();
 
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(3);
   const [isCounting, setIsCounting] = useState(false);
 
 
@@ -98,7 +99,8 @@ export default function CaptureImageScreen() {
       let base64Img = `data:image/jpg;base64,${source}`;
       setPhoto(base64Img);
       setDisableCapture(false);
-      setCountdown(5);
+      setCountdown(3); // resset countdown
+      setModalVisible(true); //open email modal
     }
   };
 
@@ -132,52 +134,52 @@ export default function CaptureImageScreen() {
       }
     };
 
-const handleSubmit = async () => {
-  if (!phoneNumber && !email) {
-    Alert.alert('Error', 'Please enter either a phone number or an email.');
-    return;
-  }
-
-  try {
-    setLoading(true);
-    // Upload the image to Cloudinary
-    const secureUrl = await uploadImageToCloudinary(photoUri);
-    setSecureUrl(secureUrl);
-
-    // Prepare the data to be sent to the backend
-    const photoData = {
-      eventID: eventID,
-      imageUrl: secureUrl,
-      phoneNumber: phoneNumber || null,
-      email: email || null,
-    };
-
-    // Send the photo data to the backend
-    const response = await axios.post(`${SERVER_LINK}/add-photo`, photoData);
-    
-    if (response.data.status === 'ok') {
-      // Alert.alert('Success', 'Photo added to event gallery successfully.');
-      router.replace({
-        pathname: '/SuccessScreen',
-        params: { eventID: eventID },
-      });      
-    } else {
-      Alert.alert('Error', response.data.data);
+  const handleSubmit = async () => {
+    if (!phoneNumber && !email) {
+      Alert.alert('Error', 'Please enter either a phone number or an email.');
+      return;
     }
 
-    setModalVisible(false);
-  } catch (error) {
-    console.error('Error submitting details:', error);
-    Alert.alert('Error', 'Failed to submit details');
-  }
-  finally {
-    setLoading(false);
-  }
-};
+    try {
+      setLoading(true);
+      // Upload the image to Cloudinary
+      const secureUrl = await uploadImageToCloudinary(photoUri);
+      setSecureUrl(secureUrl);
+
+      // Prepare the data to be sent to the backend
+      const photoData = {
+        eventID: eventID,
+        imageUrl: secureUrl,
+        phoneNumber: phoneNumber || null,
+        email: email || null,
+      };
+
+      // Send the photo data to the backend
+      const response = await axios.post(`${SERVER_LINK}/add-photo`, photoData);
+      
+      if (response.data.status === 'ok') {
+        // Alert.alert('Success', 'Photo added to event gallery successfully.');
+        router.replace({
+          pathname: '/SuccessScreen',
+          params: { eventID: eventID },
+        });      
+      } else {
+        Alert.alert('Error', response.data.data);
+      }
+
+      setModalVisible(false);
+    } catch (error) {
+      console.error('Error submitting details:', error);
+      Alert.alert('Error', 'Failed to submit details');
+    }
+    finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      {photoUri ? (
+      {photoUri && modalVisible ? (
         <View style={styles.preview}>
           <View style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             {logoUrl ? (
@@ -232,7 +234,7 @@ const handleSubmit = async () => {
             </View>
           )}
 
-          <Text style={{...fonts.display, fontSize: '240px'}}>{isCounting && countdown}</Text>
+          <Text style={{...fonts.display, fontSize: 240}}>{isCounting && countdown}</Text>
 
           <View 
             style={{
@@ -245,9 +247,7 @@ const handleSubmit = async () => {
             <TouchableOpacity style={{width: 'fit-content'}} onPress={() => router.back()}>
               <FontAwesome name="arrow-left" size={24} color={colors.text} />
             </TouchableOpacity>
-            <TouchableOpacity disabled={disableCapture} style={{...GlobalStyles.button, width: '200px', backgroundColor: disableCapture ? colors.gray[100] : colors.primary}} onPress={startCountdown}>
-              <Text style={GlobalStyles.buttonText}>Take Picture</Text>
-            </TouchableOpacity>
+            <PulsingButton disableCapture={disableCapture} startCountdown={startCountdown} />
             <TouchableOpacity style={{width: 'fit-content'}} onPress={toggleCameraFacing}>
               <FontAwesome name="refresh" size={24} color={colors.text} />
             </TouchableOpacity>
@@ -280,19 +280,12 @@ const handleSubmit = async () => {
             
             <Text style={styles.modalSubText}>OR</Text> */}
 
-            <TextInput
-              style={{...GlobalStyles.textInput, marginBottom: spacing.lg}}
-              placeholder="Email"
-              placeholderTextColor="#999"
-              keyboardType="email-address"
-              value={email}
-              onChangeText={setEmail}
-            />
+            <EmailInput email={email} setEmail={setEmail} />
 
             <View style={GlobalStyles.buttonContainer}>
               <TouchableOpacity 
                 style={{
-                  ...GlobalStyles.button, 
+                  ...GlobalStyles.buttonSecondary, 
                   backgroundColor: 'transparent', 
                   width: '50%'
                 }}

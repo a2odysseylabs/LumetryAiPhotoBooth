@@ -10,6 +10,7 @@ const EventDetailsSchema = new mongoose.Schema(
     event_logo: { type: String, default: '' },
     logo_placement: { type: String, default: '' },
     event_gallery: { type: Array, default: [] },
+    promptsList: { type: [String], default: [] },
   },
   {
     collection: "EventInfo",
