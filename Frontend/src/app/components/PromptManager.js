@@ -15,12 +15,13 @@ const PromptManager = ({ currentPrompt, setCurrentPrompt, promptList, setPromptL
     const [isEditingPrompt, setIsEditingPrompt] = useState(false);
     const [newPrompt, setNewPrompt] = useState("");
 
-    // Initialize prompts from the promptList when the component mounts
-    useEffect(() => {
-        if (promptList && promptList.length > 0) {
-            setPrompts(promptList.map((text, index) => ({ text, id: index })));
+     // Initialize prompts with the existing prompt when the component mounts
+     useEffect(() => {
+        if (currentPrompt) {
+            const initialPrompt = { text: currentPrompt, id: Date.now() };
+            setPrompts([initialPrompt]);
         }
-    }, [promptList]);
+    }, [currentPrompt]);
 
     // Function to add a new prompt to the list and update promptList
     const addNewPrompt = () => {

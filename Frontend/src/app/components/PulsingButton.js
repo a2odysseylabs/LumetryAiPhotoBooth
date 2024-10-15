@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Animated, Easing } from 'react-native';
+import { View, Text, TouchableOpacity, Animated, Easing, Dimensions } from 'react-native';
 import GlobalStyles, { colors } from '../globalStyles';
 
 const PulsingButton = ({ disableCapture, startCountdown }) => {
@@ -76,7 +76,7 @@ const PulsingButton = ({ disableCapture, startCountdown }) => {
           disabled={disableCapture}
           style={{
             ...GlobalStyles.button,
-            width: 400,
+            width: 200,
             height: 100,
             justifyContent: 'center',
             alignItems: 'center',
