@@ -157,7 +157,8 @@ app.post("/add-photo", async (req, res) => {
       email: email || null,
       sent: null,
       uploadedAt: new Date(),
-    });
+      generatedImages: [],
+    });    
 
     await event.save();
     res.send({ status: "ok", data: "Photo added to event gallery successfully" });
