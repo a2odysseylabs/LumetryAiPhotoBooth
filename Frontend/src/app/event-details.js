@@ -4,7 +4,9 @@ import { StatusBar } from 'expo-status-bar';
 import DateTimePicker from 'react-native-ui-datepicker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
-import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, SERVER_LINK } from '@env';
+import AWS from 'aws-sdk';
+import randomBytes from 'randombytes';
+import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, REGION_S3, BUCKET_NAME_S3, ACCESS_KEY_ID_S3, SECRET_ACCESS_KEY_S3, SERVER_LINK } from '@env';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
 import moment from 'moment';
@@ -13,6 +15,13 @@ import GlobalStyles, { sectionHeading, colors, fonts, spacing } from './globalSt
 import KeyboardAvoidingContainer from './components/keyboardAvoidingContainer';
 import PromptManager from './components/PromptManager';
 import GradientButton from './components/GradientButton';
+
+// Configure the AWS SDK
+const s3 = new AWS.S3({
+  accessKeyId: ACCESS_KEY_ID_S3,
+  secretAccessKey: SECRET_ACCESS_KEY_S3,
+  region: REGION_S3,
+});
 
 export default function CreateEvents() {
   const router = useRouter();
@@ -85,6 +94,30 @@ export default function CreateEvents() {
     }
   };
 
+  const uploadImageToS3 = async (photoUri) => {
+
+    const rawBytes = randomBytes(16);
+    const hexFileName = rawBytes.toString('hex');
+  
+    const response = await fetch(photoUri);
+    const blob = await response.blob();
+
+    const params = {
+      Bucket: BUCKET_NAME_S3,
+      Key: `${hexFileName}.png`,
+      Body: blob,
+      ContentType: 'image/png',
+    };
+  
+    try {
+      const data = await s3.upload(params).promise();
+      return data.Location; // The URL of the uploaded file
+    } catch (error) {
+      console.error('Error uploading image to S3:', error);
+      throw new Error('Failed to upload image');
+    }
+  };
+
   const handleSave = async () => {
     try {
       setLoading(true);
@@ -133,7 +166,7 @@ export default function CreateEvents() {
       try {
         setLogoUrl(result.assets[0].uri);
         setLoading(true);
-        const secureUrl = await uploadImageToCloudinary(result.assets[0].uri);
+        const secureUrl = await uploadImageToS3(result.assets[0].uri);
         setLogoUrl(secureUrl);
       } catch (error) {
         console.error('Error uploading image:', error);
