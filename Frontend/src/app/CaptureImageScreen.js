@@ -3,7 +3,9 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, Image, Modal, Dimensio
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
-import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, SERVER_LINK } from '@env';
+import AWS from 'aws-sdk';
+import randomBytes from 'randombytes';
+import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, REGION_S3, BUCKET_NAME_S3, ACCESS_KEY_ID_S3, SECRET_ACCESS_KEY_S3, SERVER_LINK } from '@env';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import GlobalStyles, { colors, fonts, spacing, borderRadius } from './globalStyles';
 import PulsingButton from './components/PulsingButton';
@@ -11,6 +13,13 @@ import EmailInput from './components/EmailInput';
 
 const { width } = Dimensions.get('window');
 const imageSize = width * 0.8;
+
+// Configure the AWS SDK
+const s3 = new AWS.S3({
+  accessKeyId: ACCESS_KEY_ID_S3,
+  secretAccessKey: SECRET_ACCESS_KEY_S3,
+  region: REGION_S3,
+});
 
 export default function CaptureImageScreen() {
   const [facing, setFacing] = useState('front');
@@ -112,6 +121,30 @@ export default function CaptureImageScreen() {
     setModalVisible(true);
   };
 
+  const uploadImageToS3 = async (photoUri) => {
+
+    const rawBytes = randomBytes(16);
+    const hexFileName = rawBytes.toString('hex');
+  
+    const response = await fetch(photoUri);
+    const blob = await response.blob();
+
+    const params = {
+      Bucket: BUCKET_NAME_S3,
+      Key: `${hexFileName}.jpg`,
+      Body: blob,
+      ContentType: 'image/jpeg',
+    };
+  
+    try {
+      const data = await s3.upload(params).promise();
+      return data.Location; // The URL of the uploaded file
+    } catch (error) {
+      console.error('Error uploading image to S3:', error);
+      throw new Error('Failed to upload image');
+    }
+  };
+
   const uploadImageToCloudinary = async (photoUri) => {
     const data = new FormData();
     data.append('file', photo);
@@ -143,7 +176,7 @@ export default function CaptureImageScreen() {
     try {
       setLoading(true);
       // Upload the image to Cloudinary
-      const secureUrl = await uploadImageToCloudinary(photoUri);
+      const secureUrl = await uploadImageToS3(photoUri);
       setSecureUrl(secureUrl);
 
       // Prepare the data to be sent to the backend
