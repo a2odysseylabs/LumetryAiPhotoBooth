@@ -138,7 +138,10 @@ export default function CaptureImageScreen() {
   
     try {
       const data = await s3.upload(params).promise();
-      return data.Location; // The URL of the uploaded file
+      return {
+        location: data.Location, // The URL of the uploaded file
+        fileName: hexFileName, // The generated hex file name
+      };
     } catch (error) {
       console.error('Error uploading image to S3:', error);
       throw new Error('Failed to upload image');
@@ -175,12 +178,13 @@ export default function CaptureImageScreen() {
 
     try {
       setLoading(true);
-      // Upload the image to Cloudinary
-      const secureUrl = await uploadImageToS3(photoUri);
+      // Upload the image to S3
+      const { location: secureUrl, fileName } = await uploadImageToS3(photoUri);
       setSecureUrl(secureUrl);
 
       // Prepare the data to be sent to the backend
       const photoData = {
+        fileID: fileName,
         eventID: eventID,
         imageUrl: secureUrl,
         phoneNumber: phoneNumber || null,
