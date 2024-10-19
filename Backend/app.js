@@ -142,7 +142,7 @@ app.post("/update-event", async (req, res) => {
 
 
 app.post("/add-photo", async (req, res) => {
-  const { eventID, fileID, imageUrl, phoneNumber, email } = req.body;
+  const { eventID, fileID, imageUrl, phoneNumber, email, qr } = req.body;
 
   try {
     const event = await Event.findOne({ _id: eventID });
@@ -156,6 +156,7 @@ app.post("/add-photo", async (req, res) => {
       imageUrl: imageUrl,
       phoneNumber: phoneNumber || null,
       email: email || null,
+      qr: qr || null,
       sent: null,
       uploadedAt: new Date(),
       generatedImages: [],

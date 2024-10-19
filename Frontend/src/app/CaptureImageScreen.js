@@ -30,7 +30,9 @@ export default function CaptureImageScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
+  const [qr, setQr] = useState('');
   const [secureUrl, setSecureUrl] = useState(null);
+  const [fileID, setFileID] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [logoPlacement, setLogoPlacement] = useState('');
   const [loading, setLoading] = useState(true);
@@ -171,8 +173,8 @@ export default function CaptureImageScreen() {
     };
 
   const handleSubmit = async () => {
-    if (!phoneNumber && !email) {
-      Alert.alert('Error', 'Please enter either a phone number or an email.');
+    if (!phoneNumber && !email && !qr) {
+      Alert.alert('Error', 'Please enter either a phone number or an email or select QR code option.');
       return;
     }
 
@@ -181,6 +183,7 @@ export default function CaptureImageScreen() {
       // Upload the image to S3
       const { location: secureUrl, fileName } = await uploadImageToS3(photoUri);
       setSecureUrl(secureUrl);
+      setFileID(fileName);
 
       // Prepare the data to be sent to the backend
       const photoData = {
@@ -189,6 +192,7 @@ export default function CaptureImageScreen() {
         imageUrl: secureUrl,
         phoneNumber: phoneNumber || null,
         email: email || null,
+        qr: qr || null
       };
 
       // Send the photo data to the backend
@@ -198,7 +202,7 @@ export default function CaptureImageScreen() {
         // Alert.alert('Success', 'Photo added to event gallery successfully.');
         router.replace({
           pathname: '/SuccessScreen',
-          params: { eventID: eventID },
+          params: { eventID: eventID, fileID: fileName },
         });      
       } else {
         Alert.alert('Error', response.data.data);
@@ -318,6 +322,27 @@ export default function CaptureImageScreen() {
             <Text style={styles.modalSubText}>OR</Text> */}
 
             <EmailInput email={email} setEmail={setEmail} />
+
+            {/* Add a section for QR Code Option */}
+            <View style={{ marginVertical: spacing.md }}>
+              <TouchableOpacity
+                style={{
+                  ...GlobalStyles.optionButton,
+                  backgroundColor: qr === 'selected' ? colors.primary : colors.gray[200],
+                  padding: spacing.md,
+                  borderRadius: borderRadius.sm,
+                  alignItems: 'center',
+                }}
+                onPress={() => setQr('selected')}
+              >
+                <Text style={{ 
+                  color: qr === 'selected' ? colors.textInverse : colors.text, 
+                  ...fonts.body 
+                }}>
+                  Send via QR Code
+                </Text>
+              </TouchableOpacity>
+            </View>
 
             <View style={GlobalStyles.buttonContainer}>
               <TouchableOpacity 
