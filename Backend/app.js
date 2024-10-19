@@ -142,7 +142,7 @@ app.post("/update-event", async (req, res) => {
 
 
 app.post("/add-photo", async (req, res) => {
-  const { eventID, imageUrl, phoneNumber, email } = req.body;
+  const { eventID, fileID, imageUrl, phoneNumber, email } = req.body;
 
   try {
     const event = await Event.findOne({ _id: eventID });
@@ -152,12 +152,14 @@ app.post("/add-photo", async (req, res) => {
 
     // Push the new photo details into the event_gallery array
     event.event_gallery.push({
+      id: fileID,
       imageUrl: imageUrl,
       phoneNumber: phoneNumber || null,
       email: email || null,
       sent: null,
       uploadedAt: new Date(),
-    });
+      generatedImages: [],
+    });    
 
     await event.save();
     res.send({ status: "ok", data: "Photo added to event gallery successfully" });
