@@ -57,6 +57,7 @@ const PromptManager = ({ currentPrompt, setCurrentPrompt, promptList, setPromptL
                     flexDirection: "row",
                     gap: spacing.md,
                     marginBottom: spacing.md,
+                    justifyContent: "space-between",
                 }}
             >
                 <View
@@ -64,6 +65,7 @@ const PromptManager = ({ currentPrompt, setCurrentPrompt, promptList, setPromptL
                         display: "flex",
                         flexDirection: "row",
                         flexGrow: 1,
+                        maxWidth: "80%",
                     }}
                 >
                     <TextInput
@@ -71,10 +73,10 @@ const PromptManager = ({ currentPrompt, setCurrentPrompt, promptList, setPromptL
                             ...GlobalStyles.textInput,
                             width: "auto",
                             marginBottom: 0,
-                            flexGrow: 1,
                             borderTopRightRadius: 0,
                             borderBottomRightRadius: 0,
                         }}
+                        multiline={true}
                         placeholder="Select a prompt"
                         placeholderTextColor={colors.lightGray}
                         onChangeText={(text) => {

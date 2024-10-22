@@ -136,6 +136,11 @@ const GlobalStyles = StyleSheet.create({
         borderBottomWidth: 1,
         borderStyle: 'solid',
     },
+    optionButton: {
+        backgroundColor: colors.gray[300],
+        borderRadius: borderRadius.lg,
+        padding: spacing.lg,
+    },
 });
 
 export default GlobalStyles; 
