@@ -261,7 +261,7 @@ export default function CaptureImageScreen() {
 
     return (
         <View style={styles.container}>
-            {photoUri && modalVisible ? (
+            {photoUri ? (
                 <View style={styles.preview}>
                     <View
                         style={{
