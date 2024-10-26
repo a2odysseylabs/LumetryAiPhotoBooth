@@ -160,12 +160,12 @@ const PromptManager = ({ currentPrompt, setCurrentPrompt, promptList, setPromptL
                                 placeholderTextColor={colors.lightGray}
                                 value={p.text}
                                 onChangeText={(text) => savePrompt(p.id, text)}
+                                editable={currentPrompt !== p.text} // Disable editing if this prompt is active
                             />
                             <TouchableOpacity
                                 style={{
                                     ...styles.activeButton,
-                                    ...(currentPrompt === p.text &&
-                                        styles.activeButtonSelected),
+                                    ...(currentPrompt === p.text && styles.activeButtonSelected),
                                     width: "auto",
                                 }}
                                 onPress={() => setActivePrompt(p.id)}

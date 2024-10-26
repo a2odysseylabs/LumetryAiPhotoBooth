@@ -223,6 +223,7 @@ export default function CaptureImageScreen() {
             );
             setSecureUrl(secureUrl);
             setFileID(fileName);
+            const generated_url = `https://a2odysseylabs.github.io/PhotoShare/#/aibooth/${eventID}/${fileName}`;
 
             // Prepare the data to be sent to the backend
             const photoData = {
@@ -232,6 +233,7 @@ export default function CaptureImageScreen() {
                 phoneNumber: phoneNumber || null,
                 email: email || null,
                 qr: qr || null,
+                generated_url: generated_url
             };
 
             // Send the photo data to the backend

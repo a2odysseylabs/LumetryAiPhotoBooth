@@ -8,7 +8,7 @@ import QRCode from 'react-native-qrcode-svg';
 export default function SuccessScreen() {
   const router = useRouter();
   const { eventID, fileID } = useLocalSearchParams();
-  console.log(`https://a2odysseylabs.github.io/PhotoShare/#/aibooth/${eventID}/${fileID}`);
+  // console.log(`https://a2odysseylabs.github.io/PhotoShare/#/aibooth/${eventID}/${fileID}`);
 
   const handleDone = () => {
     setTimeout(() => {

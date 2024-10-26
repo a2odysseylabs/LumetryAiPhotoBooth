@@ -10,6 +10,7 @@ import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, REGION_S3, BUCKET_NAME
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
 import moment from 'moment';
+import * as Linking from 'expo-linking';
 
 import GlobalStyles, { sectionHeading, colors, fonts, spacing } from './globalStyles';
 import KeyboardAvoidingContainer from './components/keyboardAvoidingContainer';
@@ -35,11 +36,10 @@ export default function CreateEvents() {
   const [prompt, setPrompt] = useState('');
   const [promptsList, setPromptsList] = useState([]);
   const [negativePrompt, setNegativePrompt] = useState('');
+  const [uniqueID, setUniqueID] = useState('');
   const [loading, setLoading] = useState(true);
   const [logoUrl, setLogoUrl] = useState('');
   const [logoPlacement, setLogoPlacement] = useState('');
-
-  const formattedDate = moment(eventDate).format('MMM Do YYYY');
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -56,6 +56,7 @@ export default function CreateEvents() {
           setPrompt(event.prompt);
           setPromptsList(event.promptsList || []);
           setNegativePrompt(event.negative_prompt);
+          setUniqueID(event.unique_id)
           setLogoUrl(event.event_logo);
           setLogoPlacement(event.logo_placement);
         }
@@ -186,10 +187,14 @@ export default function CreateEvents() {
   };  
 
   const handleViewGallery = () => {
-    router.push({
-      pathname: '/ViewGalleryScreen',
-      params: { eventID: eventid, eventName: eventNameInput },
-    });    
+    const url = `https://a2odysseylabs.github.io/PhotoShare/#/${uniqueID}`;
+    Linking.openURL(url).catch((err) => 
+      console.error("Failed to open URL:", err)
+    );
+    // router.push({
+    //   pathname: '/ViewGalleryScreen',
+    //   params: { eventID: eventid, eventName: eventNameInput },
+    // });    
   };
 
   if (loading) {
@@ -256,7 +261,7 @@ export default function CreateEvents() {
       {/* Event date */}
       <Text style={fonts.inputLabelText}>Event date</Text>
       <TouchableOpacity style={GlobalStyles.textInput} onPress={() => setCalOpen(!calOpen)}>
-        <Text style={{color: colors.text, fontSize: fonts.size_18}}>{formattedDate}</Text>
+        <Text style={{color: colors.text, fontSize: fonts.size_18}}>{moment(eventDate).format('MMM Do YYYY')}</Text>
       </TouchableOpacity>
       {calOpen && (
         <View style={{...GlobalStyles.textInput, display: 'flex', alignItems: 'start', paddingLeft: 0}}>
