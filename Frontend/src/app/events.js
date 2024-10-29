@@ -7,7 +7,7 @@ import Modal from 'react-native-modal';
 import DateTimePicker from 'react-native-ui-datepicker';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
-import randomBytes from "randombytes";
+import * as Crypto from 'expo-crypto';
 import { SERVER_LINK } from '@env';
 
 import Logo from '../../assets/lumetry.svg';
@@ -58,11 +58,11 @@ export default function EventsDisplay() {
     }
 
     const updatedPromptsList = [...promptsList, newPrompt];
-    console.log(updatedPromptsList);
+    // console.log(updatedPromptsList);
 
     try {
-      const rawBytes = randomBytes(16);
-      const uniqueId = rawBytes.toString("hex");
+      const randomBytes = await Crypto.getRandomBytesAsync(16);
+      const uniqueId = Array.from(randomBytes, byte => byte.toString(16).padStart(2, '0')).join('');
       const response = await axios.post(`${SERVER_LINK}/create-event`, {
         uniqueId: uniqueId,
         eventName: newEventName,

@@ -16,7 +16,7 @@ export default function SuccessScreen() {
         pathname: '/CaptureImageScreen',
         params: { eventID: eventID },
       });
-    }, 5000);
+    }, 3000);
   };
 
   return (

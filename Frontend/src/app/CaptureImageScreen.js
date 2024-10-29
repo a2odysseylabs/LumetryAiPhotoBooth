@@ -14,7 +14,7 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import axios from "axios";
 import AWS from "aws-sdk";
-import randomBytes from "randombytes";
+import * as Crypto from 'expo-crypto';
 import {
     CLOUDINARY_CLOUD_NAME,
     CLOUDINARY_UPLOAD_PRESET,
@@ -156,8 +156,8 @@ export default function CaptureImageScreen() {
     };
 
     const uploadImageToS3 = async (photoUri) => {
-        const rawBytes = randomBytes(16);
-        const hexFileName = rawBytes.toString("hex");
+        const randomBytes = await Crypto.getRandomBytesAsync(16);
+        const hexFileName = Array.from(randomBytes, byte => byte.toString(16).padStart(2, '0')).join('');
 
         const response = await fetch(photoUri);
         const blob = await response.blob();
