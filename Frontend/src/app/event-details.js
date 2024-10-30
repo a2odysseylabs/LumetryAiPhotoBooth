@@ -5,11 +5,12 @@ import DateTimePicker from 'react-native-ui-datepicker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import AWS from 'aws-sdk';
-import randomBytes from 'randombytes';
+import * as Crypto from 'expo-crypto';
 import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, REGION_S3, BUCKET_NAME_S3, ACCESS_KEY_ID_S3, SECRET_ACCESS_KEY_S3, SERVER_LINK } from '@env';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
 import moment from 'moment';
+import * as Linking from 'expo-linking';
 
 import GlobalStyles, { sectionHeading, colors, fonts, spacing } from './globalStyles';
 import KeyboardAvoidingContainer from './components/keyboardAvoidingContainer';
@@ -35,11 +36,10 @@ export default function CreateEvents() {
   const [prompt, setPrompt] = useState('');
   const [promptsList, setPromptsList] = useState([]);
   const [negativePrompt, setNegativePrompt] = useState('');
+  const [uniqueID, setUniqueID] = useState('');
   const [loading, setLoading] = useState(true);
   const [logoUrl, setLogoUrl] = useState('');
   const [logoPlacement, setLogoPlacement] = useState('');
-
-  const formattedDate = moment(eventDate).format('MMM Do YYYY');
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -56,6 +56,7 @@ export default function CreateEvents() {
           setPrompt(event.prompt);
           setPromptsList(event.promptsList || []);
           setNegativePrompt(event.negative_prompt);
+          setUniqueID(event.unique_id)
           setLogoUrl(event.event_logo);
           setLogoPlacement(event.logo_placement);
         }
@@ -96,8 +97,8 @@ export default function CreateEvents() {
 
   const uploadImageToS3 = async (photoUri) => {
 
-    const rawBytes = randomBytes(16);
-    const hexFileName = rawBytes.toString('hex');
+    const randomBytes = await Crypto.getRandomBytesAsync(16);
+    const hexFileName = Array.from(randomBytes, byte => byte.toString(16).padStart(2, '0')).join('');
   
     const response = await fetch(photoUri);
     const blob = await response.blob();
@@ -139,7 +140,7 @@ export default function CreateEvents() {
         Alert.alert('Error', response.data.data);
       }
       setLoading(false)
-      setCalOpen(false);
+      setCalOpen(false); 
     } catch (error) {
       setLoading(false)
       console.error('Error updating event:', error);
@@ -186,10 +187,14 @@ export default function CreateEvents() {
   };  
 
   const handleViewGallery = () => {
-    router.push({
-      pathname: '/ViewGalleryScreen',
-      params: { eventID: eventid, eventName: eventNameInput },
-    });    
+    const url = `https://a2odysseylabs.github.io/PhotoShare/#/${uniqueID}`;
+    Linking.openURL(url).catch((err) => 
+      console.error("Failed to open URL:", err)
+    );
+    // router.push({
+    //   pathname: '/ViewGalleryScreen',
+    //   params: { eventID: eventid, eventName: eventNameInput },
+    // });    
   };
 
   if (loading) {
@@ -256,14 +261,20 @@ export default function CreateEvents() {
       {/* Event date */}
       <Text style={fonts.inputLabelText}>Event date</Text>
       <TouchableOpacity style={GlobalStyles.textInput} onPress={() => setCalOpen(!calOpen)}>
-        <Text style={{color: colors.text, fontSize: fonts.size_18}}>{formattedDate}</Text>
+        <Text style={{color: colors.text, fontSize: fonts.size_18}}>
+          {new Intl.DateTimeFormat('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          }).format(eventDate)}
+        </Text>
       </TouchableOpacity>
       {calOpen && (
         <View style={{...GlobalStyles.textInput, display: 'flex', alignItems: 'start', paddingLeft: 0}}>
           <DateTimePicker
             mode="single"
             date={eventDate}
-            onChange={(params) => setEventDate(params.date)}
+            onChange={(params) => setEventDate(params.date)} 
             selectedItemColor={colors.primary}
             headerButtonColor={colors.lightGray}
             calendarTextStyle={{color: colors.text}}
@@ -304,39 +315,29 @@ export default function CreateEvents() {
 
       <View style={GlobalStyles.divider} />
 
-      {/* Select event logo & placement */}
-      <Text style={fonts.sectionHeading}>Select event logo & placement</Text>
-
-      <View style={!isMobile && styles.buttonContainer}>
-        <TouchableOpacity 
-          style={{ 
-            ...GlobalStyles.buttonSecondaryLight, 
-            marginBottom: spacing.md, 
-            width: isMobile ? '100%' : '48%' 
-          }} 
-          onPress={pickImage}
-        >
-          <Text style={GlobalStyles.buttonText}>Upload logo</Text>
-        </TouchableOpacity>
-        {/* <Picker
-          selectedValue={logoPlacement}
-          onValueChange={(itemValue) => setLogoPlacement(itemValue)}
-          style={{
-            ...GlobalStyles.textInput, 
-            marginBottom: spacing.md, 
-            width: isMobile ? '100%' : '48%'  
-          }}
-        >
-          <Picker.Item color={colors.text} label="Disable" value="" />
-          <Picker.Item color={colors.text} label="Bottom Left" value="BL" />
-          <Picker.Item color={colors.text} label="Bottom Right" value="BR" />
-        </Picker> */}
+      {/* Add an event logo */}
+      <View style={!isMobile && {...styles.buttonContainer, alignItems: "flex-start"}}>
+        <View>
+          <Text style={fonts.sectionHeading}>Add an event logo</Text>
+          <TouchableOpacity 
+            style={{ 
+              ...GlobalStyles.buttonSecondaryLight, 
+              marginBottom: spacing.md, 
+              width: '100%'
+            }} 
+            onPress={pickImage}
+            >
+            <Text style={GlobalStyles.buttonText}>Upload logo</Text>
+          </TouchableOpacity>
+        </View>
+    
         <View style={{
           width: isMobile ? '100%' : '48%',
-          display: 'flex', 
+          display: 'flex',
           flexDirection: 'column',
           gap: spacing.md
         }}>
+          <Text style={{...fonts.sectionHeading, marginBottom: spacing.sm}}>Select logo placement</Text>
           {/* top */}
           <TouchableOpacity 
             style={logoPlacement === 'TF' ? GlobalStyles.buttonSecondary : GlobalStyles.buttonSecondaryLight} 

@@ -134,14 +134,14 @@ export default function ViewGalleryScreen() {
             <Image
               source={{ uri: selectedImage.imageUrl }}
               style={{
-                width: 200,
-                height: 300,
+                width: 400,
+                height: 500,
                 borderRadius: borderRadius.md,
                 marginBottom: spacing.md,
               }}
             />
             {/* EmailInput that shows and updates the email */}
-            <EmailInput email={email} setEmail={setEmail} />
+            {/* <EmailInput email={email} setEmail={setEmail} /> */}
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={{ ...GlobalStyles.buttonSecondaryLight, width: 'auto' }}

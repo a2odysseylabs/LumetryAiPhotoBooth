@@ -3,10 +3,12 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import GlobalStyles, { colors, fonts, spacing } from './globalStyles';
+import QRCode from 'react-native-qrcode-svg';
 
 export default function SuccessScreen() {
   const router = useRouter();
-  const { eventID } = useLocalSearchParams();
+  const { eventID, fileID } = useLocalSearchParams();
+  // console.log(`https://a2odysseylabs.github.io/PhotoShare/#/aibooth/${eventID}/${fileID}`);
 
   const handleDone = () => {
     setTimeout(() => {
@@ -14,7 +16,7 @@ export default function SuccessScreen() {
         pathname: '/CaptureImageScreen',
         params: { eventID: eventID },
       });
-    }, 5000);
+    }, 3000);
   };
 
   return (
@@ -31,9 +33,20 @@ export default function SuccessScreen() {
         Thank you for using AiBooth!
       </Text>
 
-      <TouchableOpacity style={{...GlobalStyles.button, width: '200px'}} onPress={handleDone}>
+      <TouchableOpacity style={{...GlobalStyles.button, width: 200}} onPress={handleDone}>
         <Text style={GlobalStyles.buttonText}>Done</Text>
       </TouchableOpacity>
+
+      {fileID && eventID && (
+        <View style={{ alignItems: 'center', marginTop: spacing.lg }}>
+          <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
+            <QRCode
+              value={`https://a2odysseylabs.github.io/PhotoShare/#/aibooth/${eventID}/${fileID}`}
+              size={200}
+            />
+          </View>
+        </View>
+      )}
     </View>
   );
 }

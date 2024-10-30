@@ -31,6 +31,11 @@ export const fonts = {
     size_24: 24,
     size_32: 32,
     size_: 48,
+    paragraph: {
+        fontFamily: 'kanit-regular',
+        color: colors.text,
+        fontSize: 18,
+    },
     display: {
         fontFamily: 'kanit-bold',
         letterSpacing: 1,
@@ -135,6 +140,11 @@ const GlobalStyles = StyleSheet.create({
         borderBottomColor: colors.gray[100],
         borderBottomWidth: 1,
         borderStyle: 'solid',
+    },
+    optionButton: {
+        backgroundColor: colors.gray[300],
+        borderRadius: borderRadius.lg,
+        padding: spacing.lg,
     },
 });
 

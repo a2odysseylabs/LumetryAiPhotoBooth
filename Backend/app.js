@@ -74,7 +74,7 @@ app.post("/login-user", async (req, res) => {
 
 
 app.post("/create-event", async (req, res) => {
-  const { eventName, eventDate, promptTitle, prompt, negativePrompt, promptsList } = req.body;
+  const { uniqueId, eventName, eventDate, promptTitle, prompt, negativePrompt, promptsList } = req.body;
 
   const oldEvent = await Event.findOne({ event_name: eventName });
 
@@ -84,6 +84,7 @@ app.post("/create-event", async (req, res) => {
 
   try {
     const newEvent = await Event.create({
+      unique_id: uniqueId,
       event_name: eventName,
       event_date: eventDate,
       promptTitle: promptTitle,
@@ -142,7 +143,7 @@ app.post("/update-event", async (req, res) => {
 
 
 app.post("/add-photo", async (req, res) => {
-  const { eventID, fileID, imageUrl, phoneNumber, email } = req.body;
+  const { eventID, fileID, imageUrl, phoneNumber, email, qr, generated_url } = req.body;
 
   try {
     const event = await Event.findOne({ _id: eventID });
@@ -156,9 +157,11 @@ app.post("/add-photo", async (req, res) => {
       imageUrl: imageUrl,
       phoneNumber: phoneNumber || null,
       email: email || null,
+      qr: qr || null,
       sent: null,
       uploadedAt: new Date(),
       generatedImages: [],
+      generated_url: generated_url
     });    
 
     await event.save();

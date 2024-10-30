@@ -5,10 +5,11 @@ import {
     TouchableOpacity,
     Text,
     StyleSheet,
+    Dimensions
 } from "react-native";
 import GlobalStyles, { colors, fonts, spacing } from "../globalStyles";
 
-const EmailInput = ({ email, setEmail }) => {
+const EmailInput = ({ email, setEmail, customStyles }) => {
     // The list of available email domains
     const domains = [
         "gmail.com",
@@ -18,17 +19,19 @@ const EmailInput = ({ email, setEmail }) => {
         "hotmail.com",
     ];
 
+    const isMobile = Dimensions.get("window").width < 768;
+
     const handleSelectDomain = (domain) => {
         const [username] = email.split("@");
         setEmail(`${username}@${domain}`);
     };
 
     return (
-        <View style={styles.container}>
+        <View style={{...customStyles, width: "100%"}}>
             <TextInput
                 style={{
                     ...GlobalStyles.textInput,
-                    padding: spacing.xl,
+                    padding: isMobile ? spacing.md : spacing.xl,
                     fontSize: fonts.size_32,
                     marginBottom: spacing.lg,
                 }}
@@ -57,12 +60,11 @@ const EmailInput = ({ email, setEmail }) => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        width: "100%",
-    },
     buttonContainer: {
         display: "flex",
         flexDirection: "row",
+        flexWrap: "wrap",
+        gap: spacing.md,
         justifyContent: "space-between",
         width: "100%",
         marginBottom: spacing.lg,

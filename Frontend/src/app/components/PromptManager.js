@@ -5,7 +5,10 @@ import {
     TextInput,
     TouchableOpacity,
     StyleSheet,
+    Dimensions,
 } from "react-native";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+
 import GlobalStyles, { colors, spacing, fonts, divider, borderRadius } from "../globalStyles";
 import GradientButton from "./GradientButton";
 
@@ -14,6 +17,8 @@ const PromptManager = ({ currentPrompt, setCurrentPrompt, promptList, setPromptL
     const [promptSelectionOpen, setPromptSelectionOpen] = useState(false);
     const [isEditingPrompt, setIsEditingPrompt] = useState(false);
     const [newPrompt, setNewPrompt] = useState("");
+
+    const isMobile = Dimensions.get("window").width < 768;
 
      // Initialize prompts from the promptList when the component mounts
     useEffect(() => {
@@ -57,6 +62,7 @@ const PromptManager = ({ currentPrompt, setCurrentPrompt, promptList, setPromptL
                     flexDirection: "row",
                     gap: spacing.md,
                     marginBottom: spacing.md,
+                    justifyContent: "space-between",
                 }}
             >
                 <View
@@ -64,6 +70,7 @@ const PromptManager = ({ currentPrompt, setCurrentPrompt, promptList, setPromptL
                         display: "flex",
                         flexDirection: "row",
                         flexGrow: 1,
+                        maxWidth: isMobile ? "60%" : "80%",
                     }}
                 >
                     <TextInput
@@ -71,10 +78,10 @@ const PromptManager = ({ currentPrompt, setCurrentPrompt, promptList, setPromptL
                             ...GlobalStyles.textInput,
                             width: "auto",
                             marginBottom: 0,
-                            flexGrow: 1,
                             borderTopRightRadius: 0,
                             borderBottomRightRadius: 0,
                         }}
+                        multiline={true}
                         placeholder="Select a prompt"
                         placeholderTextColor={colors.lightGray}
                         onChangeText={(text) => {
@@ -142,7 +149,7 @@ const PromptManager = ({ currentPrompt, setCurrentPrompt, promptList, setPromptL
                             onPress={addNewPrompt}
                         >
                             <Text style={GlobalStyles.buttonText}>
-                                Save New Prompt
+                                {isMobile ? <FontAwesome style={{color: colors.buttonText}} name="check" size={32} color={colors.gray[100]} /> : "Save New Prompt"}
                             </Text>
                         </GradientButton>
                     </View>
@@ -158,12 +165,12 @@ const PromptManager = ({ currentPrompt, setCurrentPrompt, promptList, setPromptL
                                 placeholderTextColor={colors.lightGray}
                                 value={p.text}
                                 onChangeText={(text) => savePrompt(p.id, text)}
+                                editable={currentPrompt !== p.text} // Disable editing if this prompt is active
                             />
                             <TouchableOpacity
                                 style={{
                                     ...styles.activeButton,
-                                    ...(currentPrompt === p.text &&
-                                        styles.activeButtonSelected),
+                                    ...(currentPrompt === p.text && styles.activeButtonSelected),
                                     width: "auto",
                                 }}
                                 onPress={() => setActivePrompt(p.id)}
