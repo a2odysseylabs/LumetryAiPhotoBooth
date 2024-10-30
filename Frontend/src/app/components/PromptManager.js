@@ -5,7 +5,10 @@ import {
     TextInput,
     TouchableOpacity,
     StyleSheet,
+    Dimensions,
 } from "react-native";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+
 import GlobalStyles, { colors, spacing, fonts, divider, borderRadius } from "../globalStyles";
 import GradientButton from "./GradientButton";
 
@@ -14,6 +17,8 @@ const PromptManager = ({ currentPrompt, setCurrentPrompt, promptList, setPromptL
     const [promptSelectionOpen, setPromptSelectionOpen] = useState(false);
     const [isEditingPrompt, setIsEditingPrompt] = useState(false);
     const [newPrompt, setNewPrompt] = useState("");
+
+    const isMobile = Dimensions.get("window").width < 768;
 
      // Initialize prompts from the promptList when the component mounts
     useEffect(() => {
@@ -65,7 +70,7 @@ const PromptManager = ({ currentPrompt, setCurrentPrompt, promptList, setPromptL
                         display: "flex",
                         flexDirection: "row",
                         flexGrow: 1,
-                        maxWidth: "80%",
+                        maxWidth: isMobile ? "60%" : "80%",
                     }}
                 >
                     <TextInput
@@ -144,7 +149,7 @@ const PromptManager = ({ currentPrompt, setCurrentPrompt, promptList, setPromptL
                             onPress={addNewPrompt}
                         >
                             <Text style={GlobalStyles.buttonText}>
-                                Save New Prompt
+                                {isMobile ? <FontAwesome style={{color: colors.buttonText}} name="check" size={32} color={colors.gray[100]} /> : "Save New Prompt"}
                             </Text>
                         </GradientButton>
                     </View>

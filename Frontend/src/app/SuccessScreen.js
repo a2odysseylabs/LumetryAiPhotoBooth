@@ -33,7 +33,7 @@ export default function SuccessScreen() {
         Thank you for using AiBooth!
       </Text>
 
-      <TouchableOpacity style={{...GlobalStyles.button, width: '200px'}} onPress={handleDone}>
+      <TouchableOpacity style={{...GlobalStyles.button, width: 200}} onPress={handleDone}>
         <Text style={GlobalStyles.buttonText}>Done</Text>
       </TouchableOpacity>
 

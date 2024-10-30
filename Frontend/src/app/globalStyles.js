@@ -31,6 +31,11 @@ export const fonts = {
     size_24: 24,
     size_32: 32,
     size_: 48,
+    paragraph: {
+        fontFamily: 'kanit-regular',
+        color: colors.text,
+        fontSize: 18,
+    },
     display: {
         fontFamily: 'kanit-bold',
         letterSpacing: 1,

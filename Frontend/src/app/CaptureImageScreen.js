@@ -14,7 +14,7 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import axios from "axios";
 import AWS from "aws-sdk";
-import * as Crypto from 'expo-crypto';
+import * as Crypto from "expo-crypto";
 import {
     CLOUDINARY_CLOUD_NAME,
     CLOUDINARY_UPLOAD_PRESET,
@@ -36,6 +36,7 @@ import EmailInput from "./components/EmailInput";
 
 const { width } = Dimensions.get("window");
 const imageSize = width * 0.8;
+const isMobile = width < 600;
 
 // Configure the AWS SDK
 const s3 = new AWS.S3({
@@ -53,8 +54,7 @@ export default function CaptureImageScreen() {
     const [modalVisible, setModalVisible] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState("");
     const [email, setEmail] = useState("");
-    const [qr, setQr] = useState("");
-    const [viaEmail, setViaEmail] = useState(false);
+    const [activeSendMethod, setActiveSendMethod] = useState("");
     const [secureUrl, setSecureUrl] = useState(null);
     const [fileID, setFileID] = useState("");
     const [logoUrl, setLogoUrl] = useState("");
@@ -102,7 +102,7 @@ export default function CaptureImageScreen() {
                     We need your permission to show the camera
                 </Text>
                 <TouchableOpacity
-                    style={{ ...GlobalStyles.button, width: "fit-content" }}
+                    style={{ ...GlobalStyles.button, width: "auto" }}
                     onPress={requestPermission}
                 >
                     <Text style={GlobalStyles.buttonText}>
@@ -157,7 +157,9 @@ export default function CaptureImageScreen() {
 
     const uploadImageToS3 = async (photoUri) => {
         const randomBytes = await Crypto.getRandomBytesAsync(16);
-        const hexFileName = Array.from(randomBytes, byte => byte.toString(16).padStart(2, '0')).join('');
+        const hexFileName = Array.from(randomBytes, (byte) =>
+            byte.toString(16).padStart(2, "0")
+        ).join("");
 
         const response = await fetch(photoUri);
         const blob = await response.blob();
@@ -233,7 +235,7 @@ export default function CaptureImageScreen() {
                 phoneNumber: phoneNumber || null,
                 email: email || null,
                 qr: qr || null,
-                generated_url: generated_url
+                generated_url: generated_url,
             };
 
             // Send the photo data to the backend
@@ -260,6 +262,52 @@ export default function CaptureImageScreen() {
             setLoading(false);
         }
     };
+
+    const optionButton = (icon, size, text, onPress) => (
+        <TouchableOpacity
+            style={{
+                ...GlobalStyles.optionButton,
+            }}
+            onPress={onPress}
+        >
+            <View
+                style={{
+                    width: isMobile ? 75 : 150,
+                    height: isMobile ? 75 : 150,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginBottom: isMobile ? 0 : spacing.lg,
+                }}
+            >
+                <FontAwesome
+                    name={icon}
+                    size={size}
+                    color={
+                        text === activeSendMethod
+                            ? colors.lightGray
+                            : colors.gray[100]
+                    }
+                    style={{ marginHorizontal: "auto" }}
+                />
+            </View>
+            {!isMobile && (
+                <Text
+                    style={{
+                        ...fonts.display,
+                        color:
+                            text === activeSendMethod
+                                ? colors.text
+                                : colors.lightGray,
+                        fontSize: fonts.size_24,
+                        textAlign: "center",
+                    }}
+                >
+                    {text}
+                </Text>
+            )}
+        </TouchableOpacity>
+    );
 
     return (
         <View style={styles.container}>
@@ -301,7 +349,7 @@ export default function CaptureImageScreen() {
                             style={{
                                 ...GlobalStyles.button,
                                 backgroundColor: "transparent",
-                                width: "fit-content",
+                                width: "auto",
                             }}
                             onPress={retakePicture}
                         >
@@ -315,7 +363,7 @@ export default function CaptureImageScreen() {
                             </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={{ ...GlobalStyles.button, width: "200px" }}
+                            style={{ ...GlobalStyles.button, width: 200 }}
                             onPress={handleContinue}
                         >
                             <Text style={GlobalStyles.buttonText}>
@@ -366,7 +414,7 @@ export default function CaptureImageScreen() {
                         }}
                     >
                         <TouchableOpacity
-                            style={{ width: "fit-content" }}
+                            style={{ width: "auto" }}
                             onPress={() => router.back()}
                         >
                             <FontAwesome
@@ -380,7 +428,7 @@ export default function CaptureImageScreen() {
                             startCountdown={startCountdown}
                         />
                         <TouchableOpacity
-                            style={{ width: "fit-content" }}
+                            style={{ width: "auto" }}
                             onPress={toggleCameraFacing}
                         >
                             <FontAwesome
@@ -407,108 +455,105 @@ export default function CaptureImageScreen() {
                         <Text
                             style={{
                                 ...fonts.display,
-                                fontSize: fonts.size_32,
+                                fontSize: 40,
                             }}
                         >
                             Share Your Photos
                         </Text>
                         <Text
                             style={{
-                                ...styles.modalSubText,
-                                marginBottom: spacing.xl,
+                                ...fonts.paragraph,
+                                marginBottom: 48,
                             }}
                         >
                             How would you like to receive your photos?
                         </Text>
 
                         {/* CHOOSE METHOD */}
-                        <View style={GlobalStyles.buttonContainer}>
-                            <TouchableOpacity
-                                style={{
-                                    ...GlobalStyles.optionButton,
-                                }}
-                                onPress={() => setViaEmail(!viaEmail)}
-                            >
-                                <FontAwesome
-                                    name="envelope"
-                                    size={220}
-                                    color={colors.gray[100]}
-                                    style={{ marginTop: 20, marginBottom: 60 }}
-                                />
-                                <Text
-                                    style={{
-                                        ...fonts.display,
-                                        fontSize: fonts.size_24,
-                                        textAlign: "center",
-                                    }}
-                                >
-                                    Send via email
-                                </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={{
-                                    ...GlobalStyles.optionButton,
-                                    height: "400px",
-                                }}
-                                onPress={() => setQr("selected")}
-                            >
-                                <FontAwesome
-                                    name="qrcode"
-                                    size={300}
-                                    color={colors.gray[100]}
-                                />
-                                <Text
-                                    style={{
-                                        ...fonts.display,
-                                        fontSize: fonts.size_24,
-                                        textAlign: "center",
-                                    }}
-                                >
-                                    Send via QR code
-                                </Text>
-                            </TouchableOpacity>
+                        <View
+                            style={{
+                                ...GlobalStyles.buttonContainer,
+                                marginBottom: 24,
+                            }}
+                        >
+                            {optionButton(
+                                "envelope", // icon
+                                isMobile ? 75 : 150, // size
+                                "Email", // text
+                                () => setActiveSendMethod("Email") // onPress
+                            )}
+                            {optionButton(
+                                "qrcode",
+                                isMobile ? 85 : 170,
+                                "QR",
+                                () => setActiveSendMethod("QR")
+                            )}
+                            {optionButton(
+                                "mobile-phone",
+                                isMobile ? 80 : 160,
+                                "Text",
+                                () => setActiveSendMethod("Text")
+                            )}
                         </View>
 
-                        {/* <TextInput
-              style={GlobalStyles.textInput}
-              placeholder="Phone Number"
-              placeholderTextColor="#999"
-              keyboardType="phone-pad"
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
-            /> */}
-                        {viaEmail && (
-                            <View style={{ width: "100%", marginTop: spacing.xl }}>
-                                <EmailInput email={email} setEmail={setEmail} />
-                                <TouchableOpacity
+                        {activeSendMethod === "Text" && (
+                            <TextInput
+                                style={{
+                                    ...GlobalStyles.textInput,
+                                    padding: isMobile ? spacing.md : spacing.xl,
+                                    fontSize: fonts.size_32,
+                                    marginBottom: 56,
+                                }}
+                                placeholder="Phone Number"
+                                placeholderTextColor="#999"
+                                keyboardType="phone-pad"
+                                value={phoneNumber}
+                                onChangeText={setPhoneNumber}
+                            />
+                        )}
+                        {activeSendMethod === "Email" && (
+                            <EmailInput
+                                email={email}
+                                setEmail={setEmail}
+                                customStyles={{ marginBottom: 24 }}
+                            />
+                        )}
+                        <View style={{...GlobalStyles.buttonContainer}}>
+                            <TouchableOpacity
+                                style={{
+                                    ...GlobalStyles.buttonSecondary,
+                                    paddingVertical: isMobile
+                                        ? spacing.md
+                                        : spacing.xl,
+                                    backgroundColor: "transparent",
+                                    width: "50%",
+                                }}
+                                onPress={() => setModalVisible(false)}
+                                >
+                                <Text style={GlobalStyles.buttonText}>Cancel</Text>
+                            </TouchableOpacity>
+                            {(activeSendMethod === "Email" ||
+                                activeSendMethod === "Text") && (
+                                    <TouchableOpacity
                                     disabled={loading}
                                     style={{
                                         ...GlobalStyles.button,
                                         width: "50%",
-                                        marginHorizontal: "auto",
+                                        paddingVertical: isMobile
+                                        ? spacing.md
+                                        : spacing.xl,
                                         backgroundColor: loading
-                                            ? colors.gray[100]
-                                            : colors.primary,
+                                        ? colors.gray[100]
+                                        : colors.primary,
                                     }}
                                     onPress={handleSubmit}
-                                >
+                                    >
                                     <Text style={GlobalStyles.buttonText}>
                                         {loading ? "Sending" : "Submit"}
                                     </Text>
                                 </TouchableOpacity>
-                            </View>
-                        )}
-                        <TouchableOpacity
-                            style={{
-                                ...GlobalStyles.buttonSecondary,
-                                backgroundColor: "transparent",
-                                width: "50%",
-                                marginTop: spacing.xl,
-                            }}
-                            onPress={() => setModalVisible(false)}
-                        >
-                            <Text style={GlobalStyles.buttonText}>Cancel</Text>
-                        </TouchableOpacity>
+                            )}
+                        </View>
                     </View>
                 </View>
             </Modal>
@@ -550,10 +595,10 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        backgroundColor: "rgba(0, 0, 0, 0.90)",
     },
     modalView: {
-        width: "80%",
+        width: isMobile ? "100%" : "80%",
         backgroundColor: "#1E1E1E",
         borderRadius: 10,
         padding: 20,

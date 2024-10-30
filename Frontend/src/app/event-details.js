@@ -140,7 +140,7 @@ export default function CreateEvents() {
         Alert.alert('Error', response.data.data);
       }
       setLoading(false)
-      setCalOpen(false);
+      setCalOpen(false); 
     } catch (error) {
       setLoading(false)
       console.error('Error updating event:', error);
@@ -261,14 +261,20 @@ export default function CreateEvents() {
       {/* Event date */}
       <Text style={fonts.inputLabelText}>Event date</Text>
       <TouchableOpacity style={GlobalStyles.textInput} onPress={() => setCalOpen(!calOpen)}>
-        <Text style={{color: colors.text, fontSize: fonts.size_18}}>{moment(eventDate).format('MMM Do YYYY')}</Text>
+        <Text style={{color: colors.text, fontSize: fonts.size_18}}>
+          {new Intl.DateTimeFormat('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          }).format(eventDate)}
+        </Text>
       </TouchableOpacity>
       {calOpen && (
         <View style={{...GlobalStyles.textInput, display: 'flex', alignItems: 'start', paddingLeft: 0}}>
           <DateTimePicker
             mode="single"
             date={eventDate}
-            onChange={(params) => setEventDate(params.date)}
+            onChange={(params) => setEventDate(params.date)} 
             selectedItemColor={colors.primary}
             headerButtonColor={colors.lightGray}
             calendarTextStyle={{color: colors.text}}
@@ -309,39 +315,29 @@ export default function CreateEvents() {
 
       <View style={GlobalStyles.divider} />
 
-      {/* Select event logo & placement */}
-      <Text style={fonts.sectionHeading}>Select event logo & placement</Text>
-
-      <View style={!isMobile && styles.buttonContainer}>
-        <TouchableOpacity 
-          style={{ 
-            ...GlobalStyles.buttonSecondaryLight, 
-            marginBottom: spacing.md, 
-            width: isMobile ? '100%' : '48%' 
-          }} 
-          onPress={pickImage}
-        >
-          <Text style={GlobalStyles.buttonText}>Upload logo</Text>
-        </TouchableOpacity>
-        {/* <Picker
-          selectedValue={logoPlacement}
-          onValueChange={(itemValue) => setLogoPlacement(itemValue)}
-          style={{
-            ...GlobalStyles.textInput, 
-            marginBottom: spacing.md, 
-            width: isMobile ? '100%' : '48%'  
-          }}
-        >
-          <Picker.Item color={colors.text} label="Disable" value="" />
-          <Picker.Item color={colors.text} label="Bottom Left" value="BL" />
-          <Picker.Item color={colors.text} label="Bottom Right" value="BR" />
-        </Picker> */}
+      {/* Add an event logo */}
+      <View style={!isMobile && {...styles.buttonContainer, alignItems: "flex-start"}}>
+        <View>
+          <Text style={fonts.sectionHeading}>Add an event logo</Text>
+          <TouchableOpacity 
+            style={{ 
+              ...GlobalStyles.buttonSecondaryLight, 
+              marginBottom: spacing.md, 
+              width: '100%'
+            }} 
+            onPress={pickImage}
+            >
+            <Text style={GlobalStyles.buttonText}>Upload logo</Text>
+          </TouchableOpacity>
+        </View>
+    
         <View style={{
           width: isMobile ? '100%' : '48%',
-          display: 'flex', 
+          display: 'flex',
           flexDirection: 'column',
           gap: spacing.md
         }}>
+          <Text style={{...fonts.sectionHeading, marginBottom: spacing.sm}}>Select logo placement</Text>
           {/* top */}
           <TouchableOpacity 
             style={logoPlacement === 'TF' ? GlobalStyles.buttonSecondary : GlobalStyles.buttonSecondaryLight} 
