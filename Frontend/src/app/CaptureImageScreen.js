@@ -54,6 +54,7 @@ export default function CaptureImageScreen() {
     const [modalVisible, setModalVisible] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState("");
     const [email, setEmail] = useState("");
+    const [qr, setQr] = useState("");
     const [activeSendMethod, setActiveSendMethod] = useState("");
     const [secureUrl, setSecureUrl] = useState(null);
     const [fileID, setFileID] = useState("");
@@ -268,7 +269,14 @@ export default function CaptureImageScreen() {
             style={{
                 ...GlobalStyles.optionButton,
             }}
-            onPress={onPress}
+            onPress={() => {
+                onPress();
+                if (text === "QR") {
+                    setQr("selected");
+                } else {
+                    setQr("");
+                }
+            }}
         >
             <View
                 style={{
@@ -503,12 +511,20 @@ export default function CaptureImageScreen() {
                                     padding: isMobile ? spacing.md : spacing.xl,
                                     fontSize: fonts.size_32,
                                     marginBottom: 56,
+                                    color: colors.text,
                                 }}
-                                placeholder="Phone Number"
+                                placeholder="+1 Phone Number"
                                 placeholderTextColor="#999"
                                 keyboardType="phone-pad"
-                                value={phoneNumber}
-                                onChangeText={setPhoneNumber}
+                                value={phoneNumber.startsWith("+1") ? phoneNumber : `+1${phoneNumber}`}
+                                onChangeText={(text) => {
+                                    // Ensure the input always starts with +1
+                                    if (text.startsWith("+1")) {
+                                        setPhoneNumber(text);
+                                    } else {
+                                        setPhoneNumber(`+1${text.replace(/^\+1/, "")}`);
+                                    }
+                                }}
                             />
                         )}
                         {activeSendMethod === "Email" && (
@@ -533,7 +549,7 @@ export default function CaptureImageScreen() {
                                 <Text style={GlobalStyles.buttonText}>Cancel</Text>
                             </TouchableOpacity>
                             {(activeSendMethod === "Email" ||
-                                activeSendMethod === "Text") && (
+                                activeSendMethod === "Text"  || activeSendMethod === "QR") && (
                                     <TouchableOpacity
                                     disabled={loading}
                                     style={{
