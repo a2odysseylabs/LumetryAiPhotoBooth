@@ -187,7 +187,7 @@ export default function CreateEvents() {
   };  
 
   const handleViewGallery = () => {
-    const url = `https://a2odysseylabs.github.io/PhotoShare/#/${uniqueID}`;
+    const url = `https://lumetrymedia.github.io/PhotoShare/#/${uniqueID}`;
     Linking.openURL(url).catch((err) => 
       console.error("Failed to open URL:", err)
     );
