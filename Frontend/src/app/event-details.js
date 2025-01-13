@@ -39,6 +39,7 @@ export default function CreateEvents() {
   const [uniqueID, setUniqueID] = useState('');
   const [loading, setLoading] = useState(true);
   const [logoUrl, setLogoUrl] = useState('');
+  const [eventLogoUrl, setEventLogoUrl] = useState('');
   const [logoPlacement, setLogoPlacement] = useState('');
 
   useEffect(() => {
@@ -57,7 +58,8 @@ export default function CreateEvents() {
           setPromptsList(event.promptsList || []);
           setNegativePrompt(event.negative_prompt);
           setUniqueID(event.unique_id)
-          setLogoUrl(event.event_logo);
+          setLogoUrl(event.branding_logo);
+          setEventLogoUrl(event.event_logo);
           setLogoPlacement(event.logo_placement);
         }
       } catch (error) {
@@ -129,7 +131,8 @@ export default function CreateEvents() {
         promptTitle,
         prompt,
         negativePrompt,
-        event_logo: logoUrl,
+        event_logo: eventLogoUrl,
+        branding_logo: logoUrl,
         logo_placement: logoPlacement,
         promptsList: promptsList,
       });
@@ -177,7 +180,37 @@ export default function CreateEvents() {
       }
     }    
   };
-  
+
+  // New function to pick and upload branding logo
+  const pickBrandingLogo = async () => {
+    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.status !== 'granted') {
+      Alert.alert('Permission Denied', 'You need to grant permission to access the media library.');
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      try {
+        setEventLogoUrl(result.assets[0].uri);
+        setLoading(true);
+        const secureUrl = await uploadImageToS3(result.assets[0].uri);
+        setEventLogoUrl(secureUrl);
+      } catch (error) {
+        console.error('Error uploading branding logo:', error);
+        Alert.alert('Error', 'Failed to upload branding logo. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   const handleStartEvent = () => {
     handleSave();
     router.push({
@@ -326,6 +359,21 @@ export default function CreateEvents() {
               width: '100%'
             }} 
             onPress={pickImage}
+            >
+            <Text style={GlobalStyles.buttonText}>Upload logo</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Add a branding logo */}
+        <View>
+          <Text style={fonts.sectionHeading}>Add a bradning logo</Text>
+          <TouchableOpacity 
+            style={{ 
+              ...GlobalStyles.buttonSecondaryLight, 
+              marginBottom: spacing.md, 
+              width: '100%'
+            }} 
+            onPress={pickBrandingLogo}
             >
             <Text style={GlobalStyles.buttonText}>Upload logo</Text>
           </TouchableOpacity>

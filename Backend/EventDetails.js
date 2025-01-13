@@ -9,6 +9,7 @@ const EventDetailsSchema = new mongoose.Schema(
     prompt: String,
     negative_prompt: String,
     event_logo: { type: String, default: '' },
+    branding_logo: { type: String, default: '' },
     logo_placement: { type: String, default: '' },
     event_gallery: { type: Array, default: [] },
     promptsList: { type: [String], default: [] },

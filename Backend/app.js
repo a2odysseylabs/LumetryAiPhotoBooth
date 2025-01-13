@@ -112,7 +112,7 @@ app.get("/events", async (req, res) => {
 
 
 app.post("/update-event", async (req, res) => {
-  const { eventID, eventName, eventDate, promptTitle, prompt, negativePrompt, event_logo, logo_placement, promptsList } = req.body;
+  const { eventID, eventName, eventDate, promptTitle, prompt, negativePrompt, event_logo, branding_logo, logo_placement, promptsList } = req.body;
 
   try {
     const event = await Event.findOneAndUpdate(
@@ -124,6 +124,7 @@ app.post("/update-event", async (req, res) => {
         prompt: prompt,
         negative_prompt: negativePrompt,
         event_logo: event_logo,
+        branding_logo: branding_logo,
         logo_placement: logo_placement,
         promptsList: promptsList
       },

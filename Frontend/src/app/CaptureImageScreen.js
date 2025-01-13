@@ -76,7 +76,7 @@ export default function CaptureImageScreen() {
                 const event = events.find((event) => event._id === eventID);
 
                 if (event) {
-                    setLogoUrl(event.event_logo);
+                    setLogoUrl(event.branding_logo);
                     setLogoPlacement(event.logo_placement);
                 }
             } catch (error) {
