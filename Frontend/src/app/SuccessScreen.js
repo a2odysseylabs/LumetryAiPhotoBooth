@@ -10,14 +10,21 @@ export default function SuccessScreen() {
   const { eventID, fileID } = useLocalSearchParams();
   // console.log(`https://a2odysseylabs.github.io/PhotoShare/#/aibooth/${eventID}/${fileID}`);
 
+  // const handleDone = () => {
+  //   setTimeout(() => {
+  //     router.replace({
+  //       pathname: '/CaptureImageScreen',
+  //       params: { eventID: eventID },
+  //     });
+  //   }, 3000);
+  // };
+
   const handleDone = () => {
-    setTimeout(() => {
-      router.replace({
-        pathname: '/CaptureImageScreen',
-        params: { eventID: eventID },
-      });
-    }, 3000);
-  };
+    router.replace({
+      pathname: '/CaptureImageScreen',
+      params: { eventID: eventID },
+    });
+  };  
 
   return (
     <View style={styles.container}>
