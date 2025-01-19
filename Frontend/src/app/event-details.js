@@ -348,10 +348,11 @@ export default function CreateEvents() {
 
       <View style={GlobalStyles.divider} />
 
-      {/* Add an event logo */}
-      <View style={!isMobile && {...styles.buttonContainer, alignItems: "flex-start"}}>
+      {/* Add an event banner */}
+      <View style={{display: 'flex', alignItems: 'flex-start', justifyContent: "space-between"}} >
         <View>
-          <Text style={fonts.sectionHeading}>Add an event logo</Text>
+          <Text style={fonts.sectionHeading}>Add an event banner</Text>
+          <Text style={{...fonts.paragraph, color: colors.lightGray, marginBottom: spacing.sm}}>This displays at the top of the image capture/camera screen. Dimensions should be 2000 x 200</Text>
           <TouchableOpacity 
             style={{ 
               ...GlobalStyles.buttonSecondaryLight, 
@@ -360,13 +361,31 @@ export default function CreateEvents() {
             }} 
             onPress={pickImage}
             >
-            <Text style={GlobalStyles.buttonText}>Upload logo</Text>
+            <Text style={GlobalStyles.buttonText}>Upload Event Banner</Text>
           </TouchableOpacity>
         </View>
+        {logoUrl && (
+          <Image 
+            source={{ uri: logoUrl }} 
+            style={{ 
+              width: 100, 
+              height: 64, 
+              borderRadius: 10, 
+              marginRight: 'auto', 
+              marginLeft: 'auto', 
+              resizeMode: 'contain',
+            }} 
+          />
+        )}
+      </View>
 
-        {/* Add a branding logo */}
+      <View style={GlobalStyles.divider} />
+      
+      <View style={!isMobile && {...styles.buttonContainer, alignItems: "flex-start"}}>
+        {/* Add a branding logo to generated image */}
         <View>
-          <Text style={fonts.sectionHeading}>Add a bradning logo</Text>
+          <Text style={fonts.sectionHeading}>Upload generated image branding</Text>
+          <Text style={{...fonts.paragraph, color: colors.lightGray, marginBottom: spacing.sm}}>This adds branding to the generated image.</Text>
           <TouchableOpacity 
             style={{ 
               ...GlobalStyles.buttonSecondaryLight, 
@@ -377,6 +396,19 @@ export default function CreateEvents() {
             >
             <Text style={GlobalStyles.buttonText}>Upload logo</Text>
           </TouchableOpacity>
+          {eventLogoUrl && (
+          <Image 
+            source={{ uri: eventLogoUrl }} 
+            style={{ 
+              width: 100, 
+              height: 64, 
+              borderRadius: 10, 
+              marginRight: 'auto', 
+              marginLeft: 'auto', 
+              resizeMode: 'contain',
+            }} 
+          />
+        )}
         </View>
     
         <View style={{
@@ -385,7 +417,7 @@ export default function CreateEvents() {
           flexDirection: 'column',
           gap: spacing.md
         }}>
-          <Text style={{...fonts.sectionHeading, marginBottom: spacing.sm}}>Select logo placement</Text>
+          <Text style={{...fonts.sectionHeading, marginBottom: spacing.sm}}>Select placement</Text>
           {/* top */}
           <TouchableOpacity 
             style={logoPlacement === 'TF' ? GlobalStyles.buttonSecondary : GlobalStyles.buttonSecondaryLight} 
@@ -438,6 +470,10 @@ export default function CreateEvents() {
       </View>
 
       <View style={GlobalStyles.divider} />
+
+      <GradientButton style={{ width: 'auto', marginBottom: spacing.md}} onPress={handleSave}>
+          <Text style={GlobalStyles.buttonText}>Save</Text>
+      </GradientButton>
 
       <GradientButton style={{marginBottom: spacing.md}} onPress={handleStartEvent}>
         <Text style={GlobalStyles.buttonText}>Start Event</Text>

@@ -31,7 +31,7 @@ const EmailInput = ({ email, setEmail, customStyles }) => {
             <TextInput
                 style={{
                     ...GlobalStyles.textInput,
-                    padding: isMobile ? spacing.md : spacing.xl,
+                    padding: isMobile ? spacing.md : spacing.md,
                     fontSize: fonts.size_32,
                     marginBottom: spacing.lg,
                 }}

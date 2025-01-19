@@ -280,12 +280,12 @@ export default function CaptureImageScreen() {
         >
             <View
                 style={{
-                    width: isMobile ? 75 : 150,
-                    height: isMobile ? 75 : 150,
+                    width: isMobile ? 50 : 125,
+                    height: isMobile ? 50 : 125,
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    marginBottom: isMobile ? 0 : spacing.lg,
+                    marginBottom: isMobile ? 0 : spacing.sm,
                 }}
             >
                 <FontAwesome
@@ -486,19 +486,19 @@ export default function CaptureImageScreen() {
                         >
                             {optionButton(
                                 "envelope", // icon
-                                isMobile ? 75 : 150, // size
+                                isMobile ? 50 : 125, // size
                                 "Email", // text
                                 () => setActiveSendMethod("Email") // onPress
                             )}
                             {optionButton(
                                 "qrcode",
-                                isMobile ? 85 : 170,
+                                isMobile ? 50 : 140,
                                 "QR",
                                 () => setActiveSendMethod("QR")
                             )}
                             {optionButton(
                                 "mobile-phone",
-                                isMobile ? 80 : 160,
+                                isMobile ? 80 : 140,
                                 "Text",
                                 () => setActiveSendMethod("Text")
                             )}
@@ -508,7 +508,7 @@ export default function CaptureImageScreen() {
                             <TextInput
                                 style={{
                                     ...GlobalStyles.textInput,
-                                    padding: isMobile ? spacing.md : spacing.xl,
+                                    padding: isMobile ? spacing.md : spacing.lg,
                                     fontSize: fonts.size_32,
                                     marginBottom: 56,
                                     color: colors.text,
