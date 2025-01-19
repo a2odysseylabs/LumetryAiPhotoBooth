@@ -352,7 +352,7 @@ export default function CreateEvents() {
       <View style={{display: 'flex', alignItems: 'flex-start', justifyContent: "space-between"}} >
         <View>
           <Text style={fonts.sectionHeading}>Add an event banner</Text>
-          <Text style={{...fonts.paragraph, color: colors.lightGray, marginBottom: spacing.sm}}>This displays at the top of the image capture/camera screen. Dimensions should be 2000 x 200</Text>
+          <Text style={{...fonts.paragraph, color: colors.lightGray, marginBottom: spacing.sm}}>This displays at the top of the image capture/camera screen. Dimensions should be 2000 x 200. Be sure to save.</Text>
           <TouchableOpacity 
             style={{ 
               ...GlobalStyles.buttonSecondaryLight, 
@@ -385,7 +385,7 @@ export default function CreateEvents() {
         {/* Add a branding logo to generated image */}
         <View>
           <Text style={fonts.sectionHeading}>Upload generated image branding</Text>
-          <Text style={{...fonts.paragraph, color: colors.lightGray, marginBottom: spacing.sm}}>This adds branding to the generated image.</Text>
+          <Text style={{...fonts.paragraph, color: colors.lightGray, marginBottom: spacing.sm}}>This adds branding to the generated image. Be sure to save.</Text>
           <TouchableOpacity 
             style={{ 
               ...GlobalStyles.buttonSecondaryLight, 
